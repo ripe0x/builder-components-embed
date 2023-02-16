@@ -27,7 +27,7 @@ import { Theme, SortDirection } from "../types";
 import phClient from "data/fetch/phClient";
 import { GET_ALL_PH_COMMUNITIES } from "data/fetch/phQueries";
 import ComponentPicker from "../components/embed/ComponentPicker";
-import { BuilderDAO } from "nouns-builder-components";
+import { BuilderDAO } from "../localPackages/nouns-builder-components";
 
 type Props = {
   collections: DaoDetails[];
