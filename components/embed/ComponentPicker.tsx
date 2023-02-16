@@ -5,7 +5,7 @@ import { IoCopyOutline } from "react-icons/io5";
 import Select from "react-select";
 import ExampleComponent from "./ExampleComponent";
 // import { useDao } from "../../../lib/hooks";
-import { useDao } from "nouns-builder-components";
+import { useDao } from "../../localPackages/nouns-builder-components";
 import { DaoDetails, SortDirection } from "types";
 import {
   components,

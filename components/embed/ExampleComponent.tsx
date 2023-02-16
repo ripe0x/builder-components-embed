@@ -9,7 +9,7 @@ import {
   PropHouseProps,
   MemberList,
   Treasury,
-} from "nouns-builder-components";
+} from "../../localPackages/nouns-builder-components";
 import { components, themes, daos } from "../../data/embed";
 import { Theme, SortDirection, DaoInfo } from "../../types";
 
