@@ -42,6 +42,76 @@ function ExampleComponent(props: Props) {
           }}
         />
       )}
+      {props.componentIndex === 1 && (
+        <ProposalList
+          dao={props.dao}
+          opts={{
+            theme: theme,
+            sortDirection: props.sortDirection ? props.sortDirection : "DESC",
+            max: props.maxProposals ? props.maxProposals.toString() : "5",
+          }}
+        />
+      )}
+      {props.componentIndex === 2 && (
+        <CollectionList
+          dao={props.dao}
+          opts={{
+            theme: theme,
+            rows: props.rows ? props.rows.toString() : "3",
+            itemsPerRow: props.itemsPerRow ? props.itemsPerRow.toString() : "5",
+            sortDirection: props.sortDirection ? props.sortDirection : "DESC",
+            hideLabels: props.hideLabels
+              ? props.hideLabels.toString()
+              : "false",
+          }}
+        />
+      )}
+      {props.componentIndex === 3 && (
+        <MemberList
+          dao={props.dao}
+          opts={{
+            theme: theme,
+            rows: props.rows ? props.rows.toString() : "3",
+            itemsPerRow: props.itemsPerRow ? props.itemsPerRow.toString() : "5",
+            sortDirection: props.sortDirection ? props.sortDirection : "DESC",
+          }}
+        />
+      )}
+      {props.componentIndex === 4 && (
+        <Treasury dao={props.dao} opts={{ theme: theme }} />
+      )}
+      {props.componentIndex === 5 && (
+        <PropHouseRounds
+          dao={props.dao}
+          opts={{
+            theme: theme,
+            rows: props.rows ? props.rows.toString() : "3",
+            itemsPerRow: props.itemsPerRow ? props.itemsPerRow.toString() : "5",
+            sortDirection: props.sortDirection ? props.sortDirection : "DESC",
+          }}
+        />
+      )}
+      {props.componentIndex === 6 && (
+        <PropHouseProps
+          dao={props.dao}
+          opts={{
+            theme: theme,
+            max: props.maxProposals ? props.maxProposals.toString() : "5",
+            sortDirection: props.sortDirection ? props.sortDirection : "DESC",
+          }}
+        />
+      )}
+      {props.componentIndex === 7 && (
+        <CollectionList
+          dao={props.dao}
+          opts={{
+            theme: theme,
+            rows: props.rows ? props.rows.toString() : "3",
+            itemsPerRow: props.itemsPerRow ? props.itemsPerRow.toString() : "5",
+            sortDirection: props.sortDirection ? props.sortDirection : "DESC",
+          }}
+        />
+      )}
     </div>
   );
 }
