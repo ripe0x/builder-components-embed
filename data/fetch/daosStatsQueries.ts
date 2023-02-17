@@ -11,6 +11,7 @@ export const GET_ALL_DAOS_STATS = gql`
           name
           collectionAddress          
           metadataAddress
+          totalSupply
         }
       }
     }

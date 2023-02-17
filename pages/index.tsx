@@ -1,15 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Layout from "../components/layout";
 import cx from "classnames";
-import ExampleComponent from "../components/embed/ExampleComponent";
-import { IoCopyOutline } from "react-icons/io5";
-
-import {
-  components,
-  lilsDaoContracts,
-  nounsDaoContracts,
-  themes,
-} from "../data/constants";
+import { lilsDaoContracts, nounsDaoContracts } from "../data/constants";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { ethers } from "ethers";
 import { DocumentNode } from "@apollo/client";
@@ -18,12 +10,9 @@ import { GET_ALL_DAOS_STATS } from "data/fetch/daosStatsQueries";
 import { DaoDetails } from "../types";
 import { metadataContract } from "../siteConfig";
 import { parseContractURI } from "../utils";
-import Select from "react-select";
 import DaoLogo from "../components/shared/DaoLogo";
 import Info from "../components/embed/Info";
-import { AnimatePresence, motion } from "framer-motion";
 import { Helmet } from "react-helmet";
-import { Theme, SortDirection } from "../types";
 import phClient from "data/fetch/phClient";
 import { GET_ALL_PH_COMMUNITIES } from "data/fetch/phQueries";
 import ComponentPicker from "../components/embed/ComponentPicker";
@@ -52,92 +41,10 @@ const formatOptionLabel = ({
   </div>
 );
 export default function Embed({ collections, phCommunities }: Props) {
-  // console.log(phCommunities);
   const defaultDaoAddress = "0xdf9b7d26c8fc806b1ae6273684556761ff02d422";
-  // const [selectedTheme, setSelectedTheme] = useState<number>(0);
-  // const [selectedComponent, setSelectedComponent] = useState<number>(0);
   const [selectedDao, setSelectedDao] = useState<string>(defaultDaoAddress); // defaults to builder DAO
-  // const [embedCode, setEmbedCode] = useState<string>("[temp embed code]");
-  // const [rows, setRows] = useState<number>(3);
-  // const [itemsPerRow, setItemsPerRow] = useState<number>(5);
-  // const [sortDirection, setSortDirection] = useState<SortDirection>("DESC");
-  // const [maxProposals, setMaxProposals] = useState<number>(5);
-  // const [hideLabels, setHideLabels] = useState<boolean>(false);
   const [view, setView] = useState<number>(0);
-  // const [copied, setCopied] = useState<boolean>(false);
-
-  // const [daoData, setDaoData] = useState<any>(null);
-  // const dao = useDao();
-  // useEffect(() => {
-  //   if (dao) {
-  //     setDaoData(dao);
-  //   }
-  // }, [dao]);
-
-  // const updateEmbedCode = () => {
-  //   setCopied(false);
-  //   const theme = themes[selectedTheme];
-  //   const component = components[selectedComponent];
-  //   const dao = selectedDao;
-  //   const embed = `<div data-builder-component="${
-  //     components[selectedComponent].embedCodeName
-  //   }"
-  //   ${`data-builder-theme="${themes[selectedTheme]}"`}
-  //       ${
-  //         components[selectedComponent].opts?.includes("rows")
-  //           ? `data-rows="${rows}"`
-  //           : ""
-  //       }
-  //       ${
-  //         components[selectedComponent].opts?.includes("itemsPerRow")
-  //           ? `data-items-per-row="${itemsPerRow}"`
-  //           : ""
-  //       }
-  //       ${
-  //         components[selectedComponent].opts?.includes("sortDirection")
-  //           ? `data-sort-direction="${sortDirection}"`
-  //           : ""
-  //       }
-  //       ${
-  //         components[selectedComponent].opts?.includes("hideLabels")
-  //           ? `data-hide-labels="${hideLabels}"`
-  //           : ""
-  //       }
-
-  //       />`;
-  //   setEmbedCode(embed);
-  // };
-
-  // const handleCopy = () => {
-  //   setCopied(true);
-  //   setInterval(() => {
-  //     setCopied(false);
-  //   }, 3500);
-  // };
-  // const defaultSelectedDao = {
-  //   value: "0xdf9b7d26c8fc806b1ae6273684556761ff02d422",
-  //   label: "Builder DAO",
-  //   logo: "https://ipfs.filebase.io/ipfs/bafybeieifu437zmpo74odis7pg34ch5svupd5reowpsbb35wih7327mnhy/unnamed.png",
-  // };
-  // const selectOptions = collections.map((collection) => {
-  //   return {
-  //     value: collection.collectionAddress,
-  //     label: collection.name,
-  //     logo: collection.logo || "/placeholder.png",
-  //   };
-  // });
-
-  // useEffect(() => {
-  //   updateEmbedCode();
-  // }, [
-  //   selectedTheme,
-  //   selectedComponent,
-  //   selectedDao,
-  //   rows,
-  //   itemsPerRow,
-  //   sortDirection,
-  // ]);
-
+  console.log("collections", collections);
   return (
     <BuilderDAO collection={selectedDao} chain="MAINNET">
       <Helmet>
@@ -190,6 +97,7 @@ export default function Embed({ collections, phCommunities }: Props) {
             collections={collections}
             setSelectedDao={setSelectedDao}
             selectedDao={selectedDao}
+            phCommunities={phCommunities}
           />
         )}
       </Layout>
@@ -221,63 +129,53 @@ export async function getStaticProps() {
   const { data: phCommunities } = await phClient.query({
     query: phCommunitiesQuery,
   });
-  // console.log(phCommunities);
 
-  const getCollections = async () =>
-    // phCommunities: {
-    //   name: string;
-    //   contractAddress: string;
-    // }[]
-    {
-      const collections: DaoDetails[] = [];
+  const getCollections = async () => {
+    const collections: DaoDetails[] = [];
 
-      await Promise.all(
-        protocolStatsData.nouns.nounsDaos.nodes.map(async (collection: any) => {
-          if (
-            offProtocolTreasuries.includes(collection.treasuryAddress) === false
-          ) {
-            let isPH = false;
-            const contract = new ethers.Contract(
-              collection.collectionAddress,
-              metadataContract.abi,
-              provider,
-            );
+    await Promise.all(
+      protocolStatsData.nouns.nounsDaos.nodes.map(async (collection: any) => {
+        if (collection.totalSupply === 0) {
+          return;
+        }
+        if (
+          offProtocolTreasuries.includes(collection.treasuryAddress) === false
+        ) {
+          let isPH = false;
 
-            // if (
-            //   phCommunities.find(
-            //     (e) => e.contractAddress === collection.collectionAddress
-            //   )
-            // ) {
-            //   isPH = true;
-            // }
+          const contract = new ethers.Contract(
+            collection.collectionAddress,
+            metadataContract.abi,
+            provider,
+          );
 
-            const data = await contract.contractURI();
-            const contractURIData = parseContractURI(data);
-            let daoDetails;
-            if (contractURIData) {
-              daoDetails = {
-                ...collection,
-                contractURI: data || null,
-                logo: contractURIData.logo || null,
-                description: contractURIData.description,
-                isPH: isPH,
-              };
+          const data = await contract.contractURI();
+          const contractURIData = parseContractURI(data);
+          let daoDetails;
+          if (contractURIData) {
+            daoDetails = {
+              ...collection,
+              contractURI: data || null,
+              logo: contractURIData.logo || null,
+              description: contractURIData.description,
+              isPH: isPH,
+            };
 
-              collections.push(daoDetails);
-            }
-            return daoDetails;
+            collections.push(daoDetails);
           }
-        }),
-      );
-      return collections;
-    };
+          return daoDetails;
+        }
+      }),
+    );
+    return collections;
+  };
 
   const collections: DaoDetails[] = await getCollections();
 
   return {
     props: {
       collections: collections,
-      // phCommunities: phCommunities,
+      phCommunities: phCommunities,
     },
   };
 }

@@ -16,10 +16,6 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
@@ -2563,8 +2559,8 @@ var require_bn = __commonJS({
         p192: null,
         p25519: null
       };
-      function MPrime(name, p) {
-        this.name = name;
+      function MPrime(name2, p) {
+        this.name = name2;
         this.p = new BN2(p, 16);
         this.n = this.p.bitLength();
         this.k = new BN2(1).iushln(this.n).isub(this.p);
@@ -2697,22 +2693,22 @@ var require_bn = __commonJS({
         }
         return num;
       };
-      BN2._prime = function prime(name) {
-        if (primes[name])
-          return primes[name];
+      BN2._prime = function prime(name2) {
+        if (primes[name2])
+          return primes[name2];
         var prime2;
-        if (name === "k256") {
+        if (name2 === "k256") {
           prime2 = new K256();
-        } else if (name === "p224") {
+        } else if (name2 === "p224") {
           prime2 = new P224();
-        } else if (name === "p192") {
+        } else if (name2 === "p192") {
           prime2 = new P192();
-        } else if (name === "p25519") {
+        } else if (name2 === "p25519") {
           prime2 = new P25519();
         } else {
-          throw new Error("Unknown prime " + name);
+          throw new Error("Unknown prime " + name2);
         }
-        primes[name] = prime2;
+        primes[name2] = prime2;
         return prime2;
       };
       function Red(m) {
@@ -4765,12 +4761,12 @@ var abi2 = [
 var token_default = abi2;
 
 // lib/queries/utils.ts
-var fetchDataWithQuery = async (query8, variables = {}, url = "https://api.zora.co/graphql") => {
+var fetchDataWithQuery = async (query7, variables = {}, url = "https://api.zora.co/graphql") => {
   try {
     const response = await fetch(url, {
       method: "post",
       headers: { "Content-Type": "application/json; charset=utf-8" },
-      body: JSON.stringify({ query: query8, variables })
+      body: JSON.stringify({ query: query7, variables })
     });
     return await response.json();
   } catch (err) {
@@ -5176,91 +5172,13 @@ var query5 = `query GetProposals($collection: [String!], $chain: Chain!) {
   }
 }`;
 
-// lib/queries/fetchRounds.ts
-var fetchRounds = async ({ collection }) => {
-  const response = await fetchDataWithQuery(
-    query6,
-    { collection },
-    "https://prod.backend.prop.house/graphql"
-  );
-  if (!response) {
-    logWarning("no_data_from_api", collection);
-    return [];
-  }
-  const data = formatQueryData6(response);
-  if (!data)
-    return [];
-  return data;
-};
-var formatQueryData6 = (data) => {
-  const { data: result, errors } = data;
-  const communityData = result?.findByAddress;
-  const roundData = result?.findByAddress?.auctions;
-  if (errors) {
-    logWarning("query_error", "");
-    return null;
-  }
-  const rounds = roundData.map((round) => {
-    return {
-      communityId: communityData?.id,
-      communityName: communityData?.name,
-      id: round?.id,
-      status: round?.status,
-      title: round?.title,
-      startTime: new Date(round?.startTime).valueOf(),
-      proposalEndTime: new Date(round?.proposalEndTime).valueOf(),
-      votingEndTime: new Date(round?.votingEndTime).valueOf(),
-      numWinners: round?.numWinners,
-      fundingAmount: round?.fundingAmount,
-      currency: round?.currencyType,
-      description: round?.description,
-      proposalCount: round?.proposals?.length ?? 0,
-      proposals: round?.proposals?.map((prop) => {
-        return {
-          id: prop?.id,
-          created: new Date(prop?.createdDate).valueOf(),
-          proposer: prop?.address,
-          title: prop?.title,
-          tldr: prop?.tldr
-        };
-      })
-    };
-  });
-  return rounds.sort((a, b) => b.id - a.id);
-};
-var query6 = `query GetRounds($collection: String!) {
-  findByAddress(address: $collection) {
-    id
-    name
-    auctions {
-      id
-      status
-      title
-      startTime
-      proposalEndTime
-      votingEndTime
-      numWinners
-      fundingAmount
-      currencyType
-      description
-      proposals {
-        id
-        createdDate
-        address
-        title
-        tldr
-      }
-    }
-  }
-}`;
-
 // lib/queries/fetchTokenData.ts
 var fetchTokenData = async ({
   tokenId,
   collection,
   chain
 }) => {
-  const response = await fetchDataWithQuery(query7, {
+  const response = await fetchDataWithQuery(query6, {
     tokenId: String(tokenId),
     collection,
     chain
@@ -5269,14 +5187,14 @@ var fetchTokenData = async ({
     logWarning("no_data_from_api", collection, chain);
     return null;
   }
-  const data = formatQueryData7(response, chain);
+  const data = formatQueryData6(response, chain);
   if (!data?.name) {
     logWarning("incomplete_data_from_api", collection, chain);
     return null;
   }
   return data;
 };
-var formatQueryData7 = (data, chain) => {
+var formatQueryData6 = (data, chain) => {
   const { data: result, errors } = data;
   const tokenData = result?.token?.token;
   const mintData = result?.token?.events[0]?.transactionInfo;
@@ -5312,7 +5230,7 @@ var formatQueryData7 = (data, chain) => {
     }
   };
 };
-var query7 = `query GetToken($tokenId: String!, $collection: String!, $chain: Chain!) {
+var query6 = `query GetToken($tokenId: String!, $collection: String!, $chain: Chain!) {
   token(
     token: {address: $collection, tokenId: $tokenId}
     network: {network: ETHEREUM, chain: $chain}
@@ -5367,7 +5285,6 @@ var defaultData = {
 };
 var useAuction = (dao) => {
   const [auctionData, setAuctionData] = useState(defaultData.auction);
-  console.log("auctionData", auctionData);
   const [minBid, setMinBid] = useState(defaultData.minBid);
   const [userBid, setUserBid] = useState("0");
   const [isValidUserBid, setIsValidUserBid] = useState(false);
@@ -5390,7 +5307,6 @@ var useAuction = (dao) => {
   useEffect(() => {
     if (auctionData?.auctionId) {
       const { highestBid } = auctionData;
-      console.log("highestBid", highestBid);
       if (!highestBid || Number(highestBid) < 0)
         setMinBid(defaultData.minBid);
       else {
@@ -5578,27 +5494,8 @@ var useProposals = (dao) => {
   return proposals ?? [];
 };
 
-// lib/hooks/usePropHouseRounds.ts
-import { useEffect as useEffect6, useState as useState6 } from "react";
-var usePropHouseRounds = (dao) => {
-  const [rounds, setRounds] = useState6();
-  useEffect6(() => {
-    const fetchData = async () => {
-      const { collection } = dao.contracts;
-      const data = await fetchRounds({ collection });
-      if (data)
-        setRounds(data);
-      else
-        setRounds([]);
-    };
-    if (dao)
-      fetchData();
-  }, [dao]);
-  return rounds ?? [];
-};
-
 // lib/hooks/useToken.ts
-import { useEffect as useEffect7, useState as useState7 } from "react";
+import { useEffect as useEffect6, useState as useState6 } from "react";
 import { useContract, useProvider } from "wagmi";
 
 // node_modules/@ethersproject/bignumber/lib.esm/bignumber.js
@@ -5775,9 +5672,9 @@ var Logger = class {
   throwError(message, code, params) {
     throw this.makeError(message, code, params);
   }
-  throwArgumentError(message, name, value) {
+  throwArgumentError(message, name2, value) {
     return this.throwError(message, Logger.errors.INVALID_ARGUMENT, {
-      argument: name,
+      argument: name2,
       value
     });
   }
@@ -5787,11 +5684,11 @@ var Logger = class {
     }
     this.throwError(message, code, params);
   }
-  assertArgument(condition, message, name, value) {
+  assertArgument(condition, message, name2, value) {
     if (!!condition) {
       return;
     }
-    this.throwArgumentError(message, name, value);
+    this.throwArgumentError(message, name2, value);
   }
   checkNormalize(message) {
     if (message == null) {
@@ -6255,7 +6152,7 @@ function throwFault(fault, operation, value) {
 // lib/hooks/useToken.ts
 var useToken = (id, dao) => {
   const provider = useProvider();
-  const [tokenData, setTokenData] = useState7();
+  const [tokenData, setTokenData] = useState6();
   const tokenContract = useContract({
     address: dao.contracts.collection,
     abi: token_default,
@@ -6267,18 +6164,18 @@ var useToken = (id, dao) => {
     if (!response)
       return null;
     const data = JSON.parse(window.atob(response.split(",")[1]));
-    const { name, description, image, properties } = data;
+    const { name: name2, description, image, properties } = data;
     return {
       id: id2,
       owner: "",
-      name,
+      name: name2,
       description,
       imageUrl: image,
       attributes: properties,
       chain: dao.chain
     };
   };
-  useEffect7(() => {
+  useEffect6(() => {
     if (!id)
       return;
     const fetchData = async (id2) => {
@@ -6303,22 +6200,20 @@ var useToken = (id, dao) => {
 };
 
 // lib/components/AuctionHero.tsx
-import { useEffect as useEffect12, useState as useState10 } from "react";
+import { useEffect as useEffect11, useState as useState9 } from "react";
 import { constants as constants4 } from "ethers";
 import Countdown from "react-countdown";
 
 // lib/components/ComponentWrapper.tsx
-import { useEffect as useEffect8, useRef } from "react";
+import { useEffect as useEffect7, useRef } from "react";
 
 // lib/themes/base.ts
 var baseTheme = createTheme({
   primary: "blue",
   secondary: "red",
   textBase: "#1f2937",
-  // gray-800
   background: "white",
   border: "#d1d5db"
-  // gray-300
 });
 var base_default = baseTheme;
 
@@ -6328,9 +6223,7 @@ var darkTheme = createTheme({
   secondary: "#343A40",
   textBase: "white",
   background: "#1f2937",
-  // gray-800
   border: "#4b5563"
-  // gray-600
 });
 var dark_default = darkTheme;
 
@@ -6362,39 +6255,49 @@ function createTheme(config) {
   };
 }
 
-// lib/components/ComponentWrapper.tsx
+// lib/assets/loading-noggles.gif
+var loading_noggles_default = "./loading-noggles-BTZW44M2.gif";
+
+// lib/components/shared/Loading.tsx
 import { jsx } from "react/jsx-runtime";
+function Loading({}) {
+  return /* @__PURE__ */ jsx("div", { className: "mx-auto w-full h-full flex items-center justify-center p-4 md:p-10", children: /* @__PURE__ */ jsx("img", { src: loading_noggles_default, alt: "loading", className: "w-full max-w-[120px]" }) });
+}
+var Loading_default = Loading;
+
+// lib/components/ComponentWrapper.tsx
+import { jsx as jsx2 } from "react/jsx-runtime";
 function ComponentWrapper(props) {
   const ref = useRef(null);
   const theme = props.theme;
-  useEffect8(() => {
+  useEffect7(() => {
     if (ref.current != null) {
       const target = ref.current;
       applyTheme(target, theme);
     }
   }, [theme, ref]);
-  return /* @__PURE__ */ jsx("div", { className: "text-text-base bg-background p-2 md:p-5 rounded-lg", ref, children: props.children });
+  return /* @__PURE__ */ jsx2("div", { className: "text-text-base bg-background p-2 md:p-5 rounded-lg", ref, children: !props.isDataLoaded ? /* @__PURE__ */ jsx2(Loading_default, {}) : props.children });
 }
 var ComponentWrapper_default = ComponentWrapper;
 
 // lib/components/shared/Account.tsx
-import { useEffect as useEffect10, useState as useState9 } from "react";
+import { useEffect as useEffect9, useState as useState8 } from "react";
 import cx from "classnames";
 
 // lib/components/shared/Avatar.tsx
-import { useEffect as useEffect9, useMemo, useState as useState8 } from "react";
+import { useEffect as useEffect8, useMemo, useState as useState7 } from "react";
 import { zorbImageDataURI } from "@zoralabs/zorb";
 import { constants as constants3 } from "ethers";
-import { jsx as jsx2 } from "react/jsx-runtime";
+import { jsx as jsx3 } from "react/jsx-runtime";
 var Avatar = ({ address }) => {
-  const [ensAvatar, setEnsAvatar] = useState8("");
+  const [ensAvatar, setEnsAvatar] = useState7("");
   const zorbImage = useMemo(() => {
     if (address)
       return zorbImageDataURI(address);
     else
       return zorbImageDataURI(constants3.AddressZero);
   }, [address]);
-  useEffect9(() => {
+  useEffect8(() => {
     const getEnsData = async (address2) => {
       const { avatar } = await fetchEnsData(address2);
       if (avatar)
@@ -6407,18 +6310,18 @@ var Avatar = ({ address }) => {
     else
       setEnsAvatar("");
   }, [address]);
-  return /* @__PURE__ */ jsx2("img", { src: ensAvatar || zorbImage, className: "w-full rounded-full aspect-square" });
+  return /* @__PURE__ */ jsx3("img", { src: ensAvatar || zorbImage, className: "w-full rounded-full aspect-square" });
 };
 
 // lib/components/shared/Account.tsx
-import { jsx as jsx3, jsxs } from "react/jsx-runtime";
+import { jsx as jsx4, jsxs } from "react/jsx-runtime";
 var Account = ({ address, chainId, hideAvatar = false }) => {
-  const [ensName, setEnsName] = useState9("");
-  useEffect10(() => {
+  const [ensName, setEnsName] = useState8("");
+  useEffect9(() => {
     const getEnsData = async (address2) => {
-      const { name } = await fetchEnsData(address2);
-      if (name)
-        setEnsName(name);
+      const { name: name2 } = await fetchEnsData(address2);
+      if (name2)
+        setEnsName(name2);
       else
         setEnsName("");
     };
@@ -6435,8 +6338,8 @@ var Account = ({ address, chainId, hideAvatar = false }) => {
       target: "_blank",
       rel: "noreferrer",
       children: [
-        !hideAvatar === true && /* @__PURE__ */ jsx3("span", { className: "mr-2 h-6 w-6 absolute", children: /* @__PURE__ */ jsx3(Avatar, { address, chainId }) }),
-        /* @__PURE__ */ jsx3(
+        !hideAvatar === true && /* @__PURE__ */ jsx4("span", { className: "mr-2 h-6 w-6 absolute", children: /* @__PURE__ */ jsx4(Avatar, { address, chainId }) }),
+        /* @__PURE__ */ jsx4(
           "span",
           {
             className: cx(
@@ -6452,11 +6355,11 @@ var Account = ({ address, chainId, hideAvatar = false }) => {
 };
 
 // lib/components/BidForm.tsx
-import { useRef as useRef2, useEffect as useEffect11 } from "react";
+import { useRef as useRef2, useEffect as useEffect10 } from "react";
 import { BigNumber as BigNumber2 } from "ethers";
 import { parseEther as parseEther2 } from "ethers/lib/utils.js";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
-import { jsx as jsx4, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx5, jsxs as jsxs2 } from "react/jsx-runtime";
 var BidForm = ({ tokenId, formData, dao, theme }) => {
   const ref = useRef2(null);
   const { config } = usePrepareContractWrite({
@@ -6478,7 +6381,7 @@ var BidForm = ({ tokenId, formData, dao, theme }) => {
     event.preventDefault();
     write?.();
   };
-  useEffect11(() => {
+  useEffect10(() => {
     if (ref.current != null) {
       const target = ref.current;
       applyTheme(target, theme);
@@ -6492,8 +6395,8 @@ var BidForm = ({ tokenId, formData, dao, theme }) => {
       ref,
       children: [
         /* @__PURE__ */ jsxs2("div", { className: "relative mb-2 w-full flex-grow", children: [
-          /* @__PURE__ */ jsx4("span", { className: "text-lg absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400", children: "\u039E" }),
-          /* @__PURE__ */ jsx4(
+          /* @__PURE__ */ jsx5("span", { className: "text-lg absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400", children: "\u039E" }),
+          /* @__PURE__ */ jsx5(
             "input",
             {
               ...formData.input,
@@ -6501,7 +6404,7 @@ var BidForm = ({ tokenId, formData, dao, theme }) => {
             }
           )
         ] }),
-        /* @__PURE__ */ jsx4(
+        /* @__PURE__ */ jsx5(
           "button",
           {
             type: "submit",
@@ -6515,16 +6418,58 @@ var BidForm = ({ tokenId, formData, dao, theme }) => {
   );
 };
 
+// lib/components/shared/TokenImage.tsx
+import React12 from "react";
+import cx2 from "classnames";
+import Skeleton from "react-loading-skeleton";
+import { Fragment, jsx as jsx6, jsxs as jsxs3 } from "react/jsx-runtime";
+function TokenImage({ imageUrl, inCollectionList }) {
+  const [isImageLoaded, setIsImageLoaded] = React12.useState(false);
+  const [isImageError, setIsImageError] = React12.useState(false);
+  return /* @__PURE__ */ jsxs3(Fragment, { children: [
+    /* @__PURE__ */ jsx6(
+      "img",
+      {
+        src: imageUrl,
+        style: isImageLoaded ? {} : { display: "none" },
+        onLoad: () => setIsImageLoaded(true),
+        onError: () => setIsImageError(true),
+        className: cx2(
+          "rounded-md w-full",
+          !inCollectionList && "rounded-b-none !md:rounded-md !md:rounded-r-none"
+        ),
+        alt: `${name} token image`
+      }
+    ),
+    /* @__PURE__ */ jsx6(
+      "div",
+      {
+        style: !isImageLoaded && !isImageError ? { display: "block", height: "100%" } : { display: "none" },
+        children: /* @__PURE__ */ jsx6(
+          Skeleton,
+          {
+            containerClassName: "h-full w-full rounded-md rounded-b-none !md:rounded-md !md:rounded-r-none",
+            className: "aspect-square"
+          }
+        )
+      }
+    )
+  ] });
+}
+var TokenImage_default = TokenImage;
+
 // lib/components/AuctionHero.tsx
-import { Fragment, jsx as jsx5, jsxs as jsxs3 } from "react/jsx-runtime";
+import { Fragment as Fragment2, jsx as jsx7, jsxs as jsxs4 } from "react/jsx-runtime";
 var AuctionHero = ({ dao, opts = {} }) => {
   const theme = opts?.theme;
   const { auctionData, formData } = useAuction(dao);
-  const [latestTokenId, setLatestTokenId] = useState10();
-  const [tokenId, setTokenId] = useState10();
-  const [showCountdown, toggleCountdown] = useState10(true);
+  const [latestTokenId, setLatestTokenId] = useState9();
+  const [tokenId, setTokenId] = useState9();
+  const [showCountdown, toggleCountdown] = useState9(true);
+  const [isDataLoaded, setIsDataLoaded] = useState9(false);
   const token = useToken(tokenId, dao);
-  useEffect12(() => {
+  useEffect11(() => {
+    Object.keys(auctionData).length && setIsDataLoaded(true);
     const currentAuctionToken = auctionData?.auctionId;
     if (currentAuctionToken !== void 0) {
       if (!Number.isInteger(tokenId))
@@ -6535,14 +6480,14 @@ var AuctionHero = ({ dao, opts = {} }) => {
       } else
         setLatestTokenId(currentAuctionToken);
     }
-  }, [auctionData?.auctionId]);
+  }, [auctionData]);
   const date = auctionData && new Date(auctionData.endTime).toLocaleDateString("en-US");
   const time = auctionData && new Date(auctionData.endTime).toLocaleTimeString("en-US");
   const countdownRenderer = (props) => {
     if (props.completed) {
-      return /* @__PURE__ */ jsx5("p", { children: "Auction has ended" });
+      return /* @__PURE__ */ jsx7("p", { children: "Auction has ended" });
     } else {
-      return /* @__PURE__ */ jsxs3("span", { children: [
+      return /* @__PURE__ */ jsxs4("span", { children: [
         props.hours,
         "h ",
         props.minutes,
@@ -6552,156 +6497,143 @@ var AuctionHero = ({ dao, opts = {} }) => {
       ] });
     }
   };
-  return /* @__PURE__ */ jsx5(ComponentWrapper_default, { theme, children: auctionData && !auctionData?.auctionId ? /* @__PURE__ */ jsx5("div", { id: "auction", children: /* @__PURE__ */ jsx5("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx5("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx5("p", { className: "bg-slate-50 p-4 md:p-10 w-full", children: "No auction found" }) }) }) }) : /* @__PURE__ */ jsx5("div", { id: "auction", children: /* @__PURE__ */ jsx5("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsxs3("div", { className: "w-full flex flex-col md:flex-row md:gap-10 items-center", children: [
-    /* @__PURE__ */ jsx5("div", { className: "md:w-3/5 aspect-square", children: token?.imageUrl && /* @__PURE__ */ jsx5("img", { src: token.imageUrl, className: "rounded-lg w-full", alt: "" }) }),
-    /* @__PURE__ */ jsxs3("div", { className: "mt-10 mb-5 w-full sm:w-3/4 md:w-2/5", children: [
-      /* @__PURE__ */ jsxs3("div", { className: "flex flex-row items-center w-full gap-2 mb-3 md:mb-6", children: [
-        /* @__PURE__ */ jsx5(
-          "button",
-          {
-            className: "bg-gray-400 opacity-70 hover:opacity-100 text-base font-bold py-1 px-2 rounded-full text-md aspect-square disabled:opacity-25 leading-none",
-            disabled: !tokenId || tokenId <= 0,
-            onClick: () => {
-              tokenId !== void 0 && tokenId >= 0 && setTokenId(tokenId - 1);
-            },
-            children: "\u2190"
-          }
-        ),
-        /* @__PURE__ */ jsx5(
-          "button",
-          {
-            className: "bg-slate-400 opacity-70 hover:opacity-100 text-base font-bold py-1 px-2 rounded-full text-md aspect-square disabled:opacity-25 leading-none",
-            disabled: tokenId === auctionData?.auctionId,
-            onClick: () => {
-              tokenId !== void 0 && tokenId < auctionData?.auctionId && setTokenId(tokenId + 1);
-            },
-            children: "\u2192"
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsx5("h1", { className: "text-4xl md:text-5xl font-bold", children: token?.name ? token?.name : /* @__PURE__ */ jsx5(Fragment, {}) }),
-      auctionData?.auctionId === tokenId ? /* @__PURE__ */ jsx5(Fragment, { children: /* @__PURE__ */ jsxs3("div", { className: "flex gap-5", children: [
-        /* @__PURE__ */ jsxs3("div", { className: "my-5", children: [
-          /* @__PURE__ */ jsx5("p", { className: "text-md text-text-base opacity-40", children: "highest bid" }),
-          /* @__PURE__ */ jsxs3("p", { className: "text-3xl font-bold text-text-base", children: [
-            "\u039E ",
-            auctionData?.highestBid
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxs3("div", { className: "my-5", children: [
-          /* @__PURE__ */ jsx5("p", { className: "text-md text-text-base opacity-40", children: "auction ends" }),
-          /* @__PURE__ */ jsx5(
+  return /* @__PURE__ */ jsxs4(ComponentWrapper_default, { theme, isDataLoaded, children: [
+    isDataLoaded && !auctionData?.auctionId && /* @__PURE__ */ jsx7("div", { id: "auction", children: /* @__PURE__ */ jsx7("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx7("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx7("p", { className: "bg-slate-50 p-4 md:p-10 w-full", children: "No auction found" }) }) }) }),
+    isDataLoaded && auctionData?.auctionId ? /* @__PURE__ */ jsx7("div", { id: "auction", children: /* @__PURE__ */ jsx7("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsxs4("div", { className: "w-full flex flex-col md:flex-row md:gap-10 items-center", children: [
+      /* @__PURE__ */ jsx7("div", { className: "md:w-3/5 aspect-square", children: token?.imageUrl && /* @__PURE__ */ jsx7(TokenImage_default, { imageUrl: token.imageUrl }) }),
+      /* @__PURE__ */ jsxs4("div", { className: "mt-10 mb-5 w-full sm:w-3/4 md:w-2/5", children: [
+        /* @__PURE__ */ jsxs4("div", { className: "flex flex-row items-center w-full gap-2 mb-3 md:mb-6", children: [
+          /* @__PURE__ */ jsx7(
             "button",
             {
-              className: "font-bold text-text-base text-left",
+              className: "bg-gray-400 opacity-70 hover:opacity-100 text-base font-bold py-1 px-2 rounded-full text-md aspect-square disabled:opacity-25 leading-none",
+              disabled: !tokenId || tokenId <= 0,
               onClick: () => {
-                toggleCountdown(!showCountdown);
+                tokenId !== void 0 && tokenId >= 0 && setTokenId(tokenId - 1);
               },
-              children: showCountdown ? auctionData?.endTime && /* @__PURE__ */ jsx5("span", { className: "text-3xl", children: /* @__PURE__ */ jsx5(
-                Countdown,
-                {
-                  renderer: countdownRenderer,
-                  daysInHours: true,
-                  date: auctionData.endTime
-                }
-              ) }) : /* @__PURE__ */ jsxs3(Fragment, { children: [
-                /* @__PURE__ */ jsxs3("span", { className: "text-left text-lg", children: [
-                  date,
-                  " ",
-                  time
-                ] }),
-                /* @__PURE__ */ jsx5("span", { className: "text-left text-lg" })
-              ] })
+              children: "\u2190"
+            }
+          ),
+          /* @__PURE__ */ jsx7(
+            "button",
+            {
+              className: "bg-slate-400 opacity-70 hover:opacity-100 text-base font-bold py-1 px-2 rounded-full text-md aspect-square disabled:opacity-25 leading-none",
+              disabled: tokenId === auctionData?.auctionId,
+              onClick: () => {
+                tokenId !== void 0 && tokenId < auctionData?.auctionId && setTokenId(tokenId + 1);
+              },
+              children: "\u2192"
             }
           )
-        ] })
-      ] }) }) : /* @__PURE__ */ jsx5(Fragment, { children: auctionData?.highestBidder && /* @__PURE__ */ jsxs3("div", { className: "my-5", children: [
-        /* @__PURE__ */ jsx5("p", { className: "text-md text-text-base opacity-40", children: "owned by" }),
-        /* @__PURE__ */ jsx5("p", { className: "text-3xl font-bold text-text-base truncate w-full max-w-[300px]", children: /* @__PURE__ */ jsx5(Account, { address: token.owner, chainId: dao.chainId }) })
-      ] }) }),
-      tokenId && tokenId === auctionData?.auctionId && /* @__PURE__ */ jsxs3(Fragment, { children: [
-        /* @__PURE__ */ jsx5(
-          BidForm,
-          {
-            tokenId: auctionData?.auctionId,
-            formData,
-            dao,
-            theme
-          }
-        ),
-        auctionData?.highestBidder !== constants4.AddressZero && /* @__PURE__ */ jsx5("div", { className: "my-5", children: /* @__PURE__ */ jsxs3("p", { className: "text-1xl font-bold text-text-base truncate w-full max-w-[300px] flex flex-row gap-3 justify-between", children: [
-          /* @__PURE__ */ jsx5(Account, { address: auctionData?.highestBidder, chainId: dao.chainId }),
-          /* @__PURE__ */ jsxs3("span", { className: "text-md text-text-base opacity-40", children: [
-            "\u039E ",
-            auctionData.highestBid
+        ] }),
+        /* @__PURE__ */ jsx7("h1", { className: "text-4xl md:text-5xl font-bold", children: token?.name ? token?.name : /* @__PURE__ */ jsx7(Fragment2, {}) }),
+        auctionData?.auctionId === tokenId ? /* @__PURE__ */ jsx7(Fragment2, { children: /* @__PURE__ */ jsxs4("div", { className: "flex gap-5", children: [
+          /* @__PURE__ */ jsxs4("div", { className: "my-5", children: [
+            /* @__PURE__ */ jsx7("p", { className: "text-md text-text-base opacity-40", children: "highest bid" }),
+            /* @__PURE__ */ jsxs4("p", { className: "text-3xl font-bold text-text-base", children: [
+              "\u039E ",
+              auctionData?.highestBid
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs4("div", { className: "my-5", children: [
+            /* @__PURE__ */ jsx7("p", { className: "text-md text-text-base opacity-40", children: "auction ends" }),
+            /* @__PURE__ */ jsx7(
+              "button",
+              {
+                className: "font-bold text-text-base text-left",
+                onClick: () => {
+                  toggleCountdown(!showCountdown);
+                },
+                children: showCountdown ? auctionData?.endTime && /* @__PURE__ */ jsx7("span", { className: "text-3xl", children: /* @__PURE__ */ jsx7(
+                  Countdown,
+                  {
+                    renderer: countdownRenderer,
+                    daysInHours: true,
+                    date: auctionData.endTime
+                  }
+                ) }) : /* @__PURE__ */ jsxs4(Fragment2, { children: [
+                  /* @__PURE__ */ jsxs4("span", { className: "text-left text-lg", children: [
+                    date,
+                    " ",
+                    time
+                  ] }),
+                  /* @__PURE__ */ jsx7("span", { className: "text-left text-lg" })
+                ] })
+              }
+            )
           ] })
-        ] }) })
+        ] }) }) : /* @__PURE__ */ jsx7(Fragment2, { children: auctionData?.highestBidder && /* @__PURE__ */ jsxs4("div", { className: "my-5", children: [
+          /* @__PURE__ */ jsx7("p", { className: "text-md text-text-base opacity-40", children: "owned by" }),
+          /* @__PURE__ */ jsx7("p", { className: "text-3xl font-bold text-text-base truncate w-full max-w-[300px]", children: /* @__PURE__ */ jsx7(Account, { address: token.owner, chainId: dao.chainId }) })
+        ] }) }),
+        tokenId && tokenId === auctionData?.auctionId && /* @__PURE__ */ jsxs4(Fragment2, { children: [
+          /* @__PURE__ */ jsx7(
+            BidForm,
+            {
+              tokenId: auctionData?.auctionId,
+              formData,
+              dao,
+              theme
+            }
+          ),
+          auctionData?.highestBidder !== constants4.AddressZero && /* @__PURE__ */ jsx7("div", { className: "my-5", children: /* @__PURE__ */ jsxs4("p", { className: "text-1xl font-bold text-text-base truncate w-full max-w-[300px] flex flex-row gap-3 justify-between", children: [
+            /* @__PURE__ */ jsx7(Account, { address: auctionData?.highestBidder, chainId: dao.chainId }),
+            /* @__PURE__ */ jsxs4("span", { className: "text-md text-text-base opacity-40", children: [
+              "\u039E ",
+              auctionData.highestBid
+            ] })
+          ] }) })
+        ] })
       ] })
-    ] })
-  ] }) }) }) });
+    ] }) }) }) : /* @__PURE__ */ jsx7(Fragment2, {})
+  ] });
 };
 
 // lib/components/CollectionList.tsx
-import { useEffect as useEffect13, useState as useState11 } from "react";
+import { useEffect as useEffect12, useState as useState10 } from "react";
 
 // lib/components/NFT.tsx
-import cx2 from "classnames";
-import Skeleton from "react-loading-skeleton";
-import { Fragment as Fragment2, jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
+import cx3 from "classnames";
+import Skeleton2 from "react-loading-skeleton";
+import { Fragment as Fragment3, jsx as jsx8, jsxs as jsxs5 } from "react/jsx-runtime";
 var NFT = ({ token, showDetails, dao, inCollectionList, hideLabels }) => {
-  const { owner, name, imageUrl, mintInfo } = token;
-  return /* @__PURE__ */ jsx6("div", { className: cx2("flex flex-col", !inCollectionList && "md:flex-row md:items-center"), children: /* @__PURE__ */ jsxs4(Fragment2, { children: [
-    /* @__PURE__ */ jsx6("div", { className: cx2("w-full", !inCollectionList && "md:w-2/3"), children: imageUrl ? /* @__PURE__ */ jsx6(
-      "img",
-      {
-        src: imageUrl,
-        alt: name,
-        className: cx2(
-          "rounded-md w-full",
-          !inCollectionList && "rounded-b-none !md:rounded-md !md:rounded-r-none"
-        )
-      }
-    ) : /* @__PURE__ */ jsx6(
-      Skeleton,
-      {
-        containerClassName: "h-full w-full rounded-md rounded-b-none !md:rounded-md !md:rounded-r-none",
-        className: "aspect-square"
-      }
-    ) }),
-    !hideLabels && /* @__PURE__ */ jsxs4(
+  const { owner, name: name2, imageUrl, mintInfo } = token;
+  return /* @__PURE__ */ jsx8("div", { className: cx3("flex flex-col", !inCollectionList && "md:flex-row md:items-center"), children: /* @__PURE__ */ jsxs5(Fragment3, { children: [
+    /* @__PURE__ */ jsx8("div", { className: cx3("w-full h-full", !inCollectionList && "md:w-2/3"), children: /* @__PURE__ */ jsx8(TokenImage_default, { imageUrl, inCollectionList }) }),
+    !hideLabels && /* @__PURE__ */ jsxs5(
       "div",
       {
-        className: cx2(
+        className: cx3(
           "py-2 rounded-md rounded-t-none gap-5",
           !inCollectionList && "md:p-8 !md:rounded-md !md:rounded-l-none md:flex md:flex-col md:h-full md:w-1/3"
         ),
         children: [
-          /* @__PURE__ */ jsx6(
+          /* @__PURE__ */ jsx8(
             "p",
             {
-              className: cx2(
+              className: cx3(
                 "text-md font-bold",
                 inCollectionList && "lg:text-md",
                 !inCollectionList && "text-2xl md:text-4xl"
               ),
-              children: name || /* @__PURE__ */ jsx6(Skeleton, { className: "text-2xl md:text-4xl" })
+              children: name2 || /* @__PURE__ */ jsx8(Skeleton2, { className: "text-2xl md:text-4xl" })
             }
           ),
-          showDetails && /* @__PURE__ */ jsxs4("div", { className: "grid grid-cols-12 gap-5 md:flex md:flex-col", children: [
-            /* @__PURE__ */ jsx6("div", { className: "col-span-4 md:col-span-6", children: /* @__PURE__ */ jsxs4(Fragment2, { children: [
-              /* @__PURE__ */ jsx6("p", { className: "text-sm text-slate-400", children: "Owner" }),
-              /* @__PURE__ */ jsx6("p", { className: "text-md truncate font-bold w-full", children: owner ? /* @__PURE__ */ jsx6(Account, { address: owner, chainId: dao.chainId }) : /* @__PURE__ */ jsx6(Skeleton, { className: "text-md" }) })
+          showDetails && /* @__PURE__ */ jsxs5("div", { className: "grid grid-cols-12 gap-5 md:flex md:flex-col", children: [
+            /* @__PURE__ */ jsx8("div", { className: "col-span-4 md:col-span-6", children: /* @__PURE__ */ jsxs5(Fragment3, { children: [
+              /* @__PURE__ */ jsx8("p", { className: "text-sm text-slate-400", children: "Owner" }),
+              /* @__PURE__ */ jsx8("p", { className: "text-md truncate font-bold w-full", children: owner ? /* @__PURE__ */ jsx8(Account, { address: owner, chainId: dao.chainId }) : /* @__PURE__ */ jsx8(Skeleton2, { className: "text-md" }) })
             ] }) }),
-            /* @__PURE__ */ jsxs4("div", { className: "col-span-4 md:col-span-3", children: [
-              /* @__PURE__ */ jsx6("p", { className: "text-sm text-slate-400", children: "Minted on" }),
-              /* @__PURE__ */ jsx6("p", { className: "text-md  truncate font-bold", children: mintInfo ? /* @__PURE__ */ jsx6("p", { className: "text-md truncate font-bold", children: new Date(mintInfo.blockTimestamp).toLocaleDateString("en-US") }) : /* @__PURE__ */ jsx6(Skeleton, { className: "text-sm" }) })
+            /* @__PURE__ */ jsxs5("div", { className: "col-span-4 md:col-span-3", children: [
+              /* @__PURE__ */ jsx8("p", { className: "text-sm text-slate-400", children: "Minted on" }),
+              /* @__PURE__ */ jsx8("p", { className: "text-md  truncate font-bold", children: mintInfo ? /* @__PURE__ */ jsx8("p", { className: "text-md truncate font-bold", children: new Date(mintInfo.blockTimestamp).toLocaleDateString("en-US") }) : /* @__PURE__ */ jsx8(Skeleton2, { className: "text-sm" }) })
             ] }),
-            /* @__PURE__ */ jsxs4("div", { className: "col-span-4 md:col-span-3", children: [
-              /* @__PURE__ */ jsx6("p", { className: "text-sm text-slate-400", children: "Member of" }),
-              /* @__PURE__ */ jsx6("a", { href: dao.external_url, rel: "noopener", className: "no-underline", children: dao ? /* @__PURE__ */ jsxs4(Fragment2, { children: [
-                dao.imageUrl && /* @__PURE__ */ jsx6("img", { src: dao.imageUrl, alt: `${dao.name} logo`, className: "rounded-md" }),
-                /* @__PURE__ */ jsx6("p", { className: "text-md truncate font-bold", children: dao.name })
-              ] }) : /* @__PURE__ */ jsx6(Skeleton, { className: "text-md" }) })
+            /* @__PURE__ */ jsxs5("div", { className: "col-span-4 md:col-span-3", children: [
+              /* @__PURE__ */ jsx8("p", { className: "text-sm text-slate-400", children: "Member of" }),
+              /* @__PURE__ */ jsx8("a", { href: dao.external_url, rel: "noopener", className: "no-underline", children: dao ? /* @__PURE__ */ jsxs5(Fragment3, { children: [
+                dao.imageUrl && /* @__PURE__ */ jsx8("img", { src: dao.imageUrl, alt: `${dao.name} logo`, className: "rounded-md" }),
+                /* @__PURE__ */ jsx8("p", { className: "text-md truncate font-bold", children: dao.name })
+              ] }) : /* @__PURE__ */ jsx8(Skeleton2, { className: "text-md" }) })
             ] })
           ] })
         ]
@@ -6712,7 +6644,7 @@ var NFT = ({ token, showDetails, dao, inCollectionList, hideLabels }) => {
 
 // lib/components/CollectionList.tsx
 import { useMediaQuery } from "react-responsive";
-import { jsx as jsx7 } from "react/jsx-runtime";
+import { jsx as jsx9, jsxs as jsxs6 } from "react/jsx-runtime";
 var CollectionList = ({ dao, opts = {} }) => {
   const theme = opts?.theme;
   const rows = Number(opts?.rows) || 3;
@@ -6721,9 +6653,11 @@ var CollectionList = ({ dao, opts = {} }) => {
   const hideLabels = opts?.hideLabels === true || opts?.hideLabels === "true";
   const collection = useCollection(dao);
   const isMdOrAbove = useMediaQuery({ query: "(min-width: 786px)" });
-  const [tokens, setTokens] = useState11([]);
-  useEffect13(() => {
+  const [isDataLoaded, setIsDataLoaded] = useState10(false);
+  const [tokens, setTokens] = useState10([]);
+  useEffect12(() => {
     if (collection.length) {
+      setIsDataLoaded(true);
       if (sortDirection === "DESC") {
         const sorted = [...collection].sort((a, b) => b.id - a.id);
         setTokens(sorted);
@@ -6731,49 +6665,61 @@ var CollectionList = ({ dao, opts = {} }) => {
         setTokens(collection);
     }
   }, [collection, sortDirection]);
-  return /* @__PURE__ */ jsx7(ComponentWrapper_default, { theme, children: /* @__PURE__ */ jsx7(
-    "div",
-    {
-      id: "collection",
-      className: `mx-auto grid gap-8`,
-      style: {
-        gridTemplateColumns: isMdOrAbove ? `repeat(${itemsPerRow},minmax(0,1fr))` : "repeat(3,minmax(0,1fr))"
-      },
-      children: tokens?.map((token, i) => {
-        if (rows && i >= rows * itemsPerRow)
-          return null;
-        return /* @__PURE__ */ jsx7(
-          "a",
-          {
-            href: `https://nouns.build/dao/${dao.contracts.collection}/${token.id}`,
-            children: /* @__PURE__ */ jsx7(
-              NFT,
-              {
-                token,
-                dao,
-                showDetails: false,
-                inCollectionList: true,
-                hideLabels
-              }
-            )
-          },
-          token.id
-        );
-      })
-    }
-  ) });
+  return /* @__PURE__ */ jsxs6(ComponentWrapper_default, { theme, isDataLoaded, children: [
+    !collection.length && /* @__PURE__ */ jsx9(Loading_default, {}),
+    /* @__PURE__ */ jsx9(
+      "div",
+      {
+        id: "collection",
+        className: `mx-auto grid gap-8`,
+        style: {
+          gridTemplateColumns: isMdOrAbove ? `repeat(${itemsPerRow},minmax(0,1fr))` : "repeat(3,minmax(0,1fr))"
+        },
+        children: collection && tokens?.map((token, i) => {
+          if (rows && i >= rows * itemsPerRow)
+            return null;
+          return /* @__PURE__ */ jsx9(
+            "a",
+            {
+              href: `https://nouns.build/dao/${dao.contracts.collection}/${token.id}`,
+              target: "_blank",
+              rel: "noreferrer",
+              children: /* @__PURE__ */ jsx9(
+                NFT,
+                {
+                  token,
+                  dao,
+                  showDetails: false,
+                  inCollectionList: true,
+                  hideLabels
+                }
+              )
+            },
+            token.id
+          );
+        })
+      }
+    )
+  ] });
 };
 
 // lib/components/MemberList.tsx
+import { useEffect as useEffect13, useState as useState11 } from "react";
 import { useMediaQuery as useMediaQuery2 } from "react-responsive";
-import { jsx as jsx8, jsxs as jsxs5 } from "react/jsx-runtime";
+import { jsx as jsx10, jsxs as jsxs7 } from "react/jsx-runtime";
 var MemberList = ({ dao, opts = {} }) => {
   const theme = opts?.theme;
   const rows = Number(opts?.rows) || 3;
   const itemsPerRow = Number(opts?.itemsPerRow) || 6;
   const isMdOrAbove = useMediaQuery2({ query: "(min-width: 786px)" });
   const members = useMembers(dao);
-  return /* @__PURE__ */ jsx8(ComponentWrapper_default, { theme, children: /* @__PURE__ */ jsx8(
+  const [isDataLoaded, setIsDataLoaded] = useState11(false);
+  useEffect13(() => {
+    if (members.length) {
+      setIsDataLoaded(true);
+    }
+  }, [members]);
+  return /* @__PURE__ */ jsx10(ComponentWrapper_default, { theme, isDataLoaded, children: /* @__PURE__ */ jsx10(
     "div",
     {
       className: `mx-auto grid gap-3 md:gap-10`,
@@ -6783,9 +6729,9 @@ var MemberList = ({ dao, opts = {} }) => {
       children: members?.map((member, i) => {
         if (rows && i >= rows * itemsPerRow)
           return null;
-        return /* @__PURE__ */ jsxs5("div", { className: "w-full", children: [
-          /* @__PURE__ */ jsx8(Avatar, { address: member.address, chainId: dao.chainId }),
-          /* @__PURE__ */ jsx8(Account, { address: member.address, chainId: dao.chainId, hideAvatar: true })
+        return /* @__PURE__ */ jsxs7("div", { className: "w-full", children: [
+          /* @__PURE__ */ jsx10(Avatar, { address: member.address, chainId: dao.chainId }),
+          /* @__PURE__ */ jsx10(Account, { address: member.address, chainId: dao.chainId, hideAvatar: true })
         ] }, i);
       })
     }
@@ -6794,10 +6740,11 @@ var MemberList = ({ dao, opts = {} }) => {
 
 // lib/components/PropHouseProps.tsx
 import { useEffect as useEffect14, useState as useState12 } from "react";
-import cx4 from "classnames";
+import cx5 from "classnames";
+import { useRoundsByHouse } from "use-prop-house";
 
 // lib/components/shared/PropHouseProp.tsx
-import cx3 from "classnames";
+import cx4 from "classnames";
 
 // lib/styles/shared.ts
 var label = "text-sm text-slate-400";
@@ -6809,26 +6756,26 @@ var statusColors = [
 ];
 
 // lib/components/shared/PropHouseProp.tsx
-import { Fragment as Fragment3, jsx as jsx9, jsxs as jsxs6 } from "react/jsx-runtime";
-var PropHouseProp = ({ prop, format, isWinner }) => {
-  const { created, title, tldr, proposer } = prop;
-  return /* @__PURE__ */ jsxs6(
+import { Fragment as Fragment4, jsx as jsx11, jsxs as jsxs8 } from "react/jsx-runtime";
+var PropHouseProp = ({ prop, format }) => {
+  const { created, title, summary, proposer, isWinner } = prop;
+  return /* @__PURE__ */ jsxs8(
     "div",
     {
       className: `h-full border border-theme-border p-3 md:p-5 rounded-lg hover:shadow-md shadow-none transition-shadow`,
       children: [
-        format === "grid" && /* @__PURE__ */ jsx9("span", { className: "opacity-70", children: relative(created) }),
-        /* @__PURE__ */ jsxs6("div", { className: "flex flex-row justify-between mb-2", children: [
-          /* @__PURE__ */ jsx9("p", { className: "font-bold text-xl leading-snug", children: title }),
-          isWinner && /* @__PURE__ */ jsx9("p", { className: cx3(pill, statusColors[1]), children: "Winner" })
+        format === "grid" && /* @__PURE__ */ jsx11("span", { className: "opacity-70", children: relative(created) }),
+        /* @__PURE__ */ jsxs8("div", { className: "flex flex-row justify-between mb-2", children: [
+          /* @__PURE__ */ jsx11("p", { className: "font-bold text-xl leading-snug", children: title }),
+          isWinner && /* @__PURE__ */ jsx11("p", { className: cx4(pill, statusColors[1]), children: "Winner" })
         ] }),
-        /* @__PURE__ */ jsx9("p", { className: "font-normal line-clamp-2 mb-2 opacity-70", children: tldr }),
-        /* @__PURE__ */ jsxs6("p", { className: "font-normal", children: [
-          /* @__PURE__ */ jsx9("strong", { children: /* @__PURE__ */ jsx9(Account, { address: proposer, chainId: 1 }) }),
-          format !== "grid" && /* @__PURE__ */ jsxs6(Fragment3, { children: [
-            /* @__PURE__ */ jsx9("span", { className: "px-2 opacity-25", children: "\u2022" }),
+        /* @__PURE__ */ jsx11("p", { className: "font-normal line-clamp-2 mb-2 opacity-70", children: summary }),
+        /* @__PURE__ */ jsxs8("p", { className: "font-normal", children: [
+          /* @__PURE__ */ jsx11("strong", { children: /* @__PURE__ */ jsx11(Account, { address: proposer, chainId: 1 }) }),
+          format !== "grid" && /* @__PURE__ */ jsxs8(Fragment4, { children: [
+            /* @__PURE__ */ jsx11("span", { className: "px-2 opacity-25", children: "\u2022" }),
             " ",
-            /* @__PURE__ */ jsx9("span", { className: "opacity-70", children: relative(created) })
+            /* @__PURE__ */ jsx11("span", { className: "opacity-70", children: relative(created) })
           ] })
         ] })
       ]
@@ -6837,61 +6784,48 @@ var PropHouseProp = ({ prop, format, isWinner }) => {
 };
 
 // lib/components/PropHouseProps.tsx
-import { jsx as jsx10 } from "react/jsx-runtime";
+import { jsx as jsx12, jsxs as jsxs9 } from "react/jsx-runtime";
 var getListFormatClasses = (format) => {
   return format === "grid" ? "grid grid-cols-1 md:grid-cols-3" : "flex flex-col";
 };
-var PropHouseProps = ({ dao, opts = {} }) => {
+var PropHouseProps = ({ opts = {} }) => {
   const theme = opts?.theme;
-  const roundName = opts?.round;
+  const houseId = opts?.houseId ? Number(opts?.houseId) : 21;
+  const roundName = opts?.round ?? "";
   const format = opts?.format || "list";
-  const sortDirection = opts?.sortDirection?.toUpperCase() || "DESC";
   const maxProposals = Number(opts?.max) || 12;
-  const roundData = usePropHouseRounds(dao);
+  const { data: roundData } = useRoundsByHouse({ houseId });
   const [round, setRound] = useState12();
-  const [props, setProps] = useState12([]);
   useEffect14(() => {
-    if (roundData.length) {
-      let round2 = {};
-      if (roundName) {
-        const index = roundData.findIndex((r) => r.title === roundName);
-        if (index >= 0)
-          round2 = roundData[index];
-      }
-      if (!round2.id)
-        round2 = roundData[0];
-      if (sortDirection === "ASC" && Date.now() < round2?.votingEndTime) {
-        setProps(round2.proposals.sort((a, b) => b.created - a.created));
-      } else
-        setProps(round2.proposals.sort((a, b) => a.created - b.created));
-      setRound(round2);
-    }
-  }, [roundName, roundData, sortDirection]);
-  return /* @__PURE__ */ jsx10(ComponentWrapper_default, { theme, children: /* @__PURE__ */ jsx10("div", { id: "ph-rounds", className: cx4(`mx-auto gap-5 `, getListFormatClasses(format)), children: round && props.map((prop, i) => {
-    if (i >= maxProposals)
-      return null;
-    const communitySlug = round.communityName.toLowerCase().replaceAll(" ", "-");
-    const roundSlug = round.title.toLowerCase().replaceAll(" ", "-");
-    const isWinner = Date.now() > round.votingEndTime && i < round.numWinners;
-    return /* @__PURE__ */ jsx10(
-      "a",
-      {
-        href: `https://prop.house/${communitySlug}/${roundSlug}/${prop.id}`,
-        target: "_blank",
-        rel: "noreferrer",
-        children: /* @__PURE__ */ jsx10(PropHouseProp, { prop, format, isWinner })
-      },
-      i
-    );
-  }) }) });
+    const parseRounds = () => {
+      const index = roundData.findIndex((r) => r.name === roundName);
+      if (index >= 0)
+        setRound(roundData[index]);
+      else
+        setRound(void 0);
+    };
+    if (roundName && roundData.length)
+      parseRounds();
+    else
+      setRound(void 0);
+  }, [roundName, roundData]);
+  return /* @__PURE__ */ jsxs9(ComponentWrapper_default, { theme, isDataLoaded: roundData.length ? true : false, children: [
+    !round && /* @__PURE__ */ jsx12("div", { id: "auction", children: /* @__PURE__ */ jsx12("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx12("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx12("p", { className: "bg-slate-50 p-4 md:p-10 w-full", children: "No auction found" }) }) }) }),
+    /* @__PURE__ */ jsx12("div", { id: "ph-rounds", className: cx5(`mx-auto gap-5 `, getListFormatClasses(format)), children: round && round.proposals.map((prop, i) => {
+      if (i >= maxProposals)
+        return null;
+      return /* @__PURE__ */ jsx12("a", { href: prop.url, target: "_blank", rel: "noreferrer", children: /* @__PURE__ */ jsx12(PropHouseProp, { prop, format }) }, prop.id);
+    }) })
+  ] });
 };
 
 // lib/components/PropHouseRounds.tsx
 import { useEffect as useEffect15, useState as useState13 } from "react";
+import { useRoundsByHouse as useRoundsByHouse2 } from "use-prop-house";
 
 // lib/components/shared/PropHouseRound.tsx
-import cx5 from "classnames";
-import { jsx as jsx11, jsxs as jsxs7 } from "react/jsx-runtime";
+import cx6 from "classnames";
+import { jsx as jsx13, jsxs as jsxs10 } from "react/jsx-runtime";
 var getStatusColorClasses = (status) => {
   switch (status.toLowerCase()) {
     case "proposing":
@@ -6903,77 +6837,59 @@ var getStatusColorClasses = (status) => {
   }
 };
 var PropHouseRound = ({ round }) => {
-  const {
-    title,
-    description,
-    status,
-    proposalCount,
-    numWinners,
-    fundingAmount,
-    currency,
-    proposalEndTime
-  } = round;
+  const { name: name2, description, status, proposals, funding, proposalDeadline } = round;
   const statusColor = getStatusColorClasses(status);
-  return /* @__PURE__ */ jsxs7("div", { className: "h-full border border-theme-border p-3 md:p-5 rounded-lg hover:shadow-md shadow-none transition-shadow", children: [
-    /* @__PURE__ */ jsxs7("div", { children: [
-      /* @__PURE__ */ jsxs7("div", { className: "flex flex-row justify-between mb-3", children: [
-        /* @__PURE__ */ jsx11("p", { className: "font-bold text-xl leading-snug", children: title }),
-        /* @__PURE__ */ jsx11("p", { className: cx5(pill, statusColor), children: status })
+  return /* @__PURE__ */ jsxs10("div", { className: "h-full border border-theme-border p-3 md:p-5 rounded-lg hover:shadow-md shadow-none transition-shadow", children: [
+    /* @__PURE__ */ jsxs10("div", { children: [
+      /* @__PURE__ */ jsxs10("div", { className: "flex flex-row justify-between mb-3", children: [
+        /* @__PURE__ */ jsx13("p", { className: "font-bold text-xl leading-snug", children: name2 }),
+        /* @__PURE__ */ jsx13("p", { className: cx6(pill, statusColor), children: status })
       ] }),
-      /* @__PURE__ */ jsx11("p", { className: "line-clamp-3 font-normal text-xs md:text-base", children: description })
+      /* @__PURE__ */ jsx13("p", { className: "line-clamp-3 font-normal text-xs md:text-base", children: description })
     ] }),
-    /* @__PURE__ */ jsxs7("div", { className: "flex flex-row gap-3 justify-between pt-3 md:pt-5", children: [
-      /* @__PURE__ */ jsxs7("div", { children: [
-        /* @__PURE__ */ jsx11("p", { className: label, children: "Funding" }),
-        /* @__PURE__ */ jsx11("p", { className: "font-bold", children: `${fundingAmount} ${currency} ${String.fromCharCode(
+    /* @__PURE__ */ jsxs10("div", { className: "flex flex-row gap-3 justify-between pt-3 md:pt-5", children: [
+      /* @__PURE__ */ jsxs10("div", { children: [
+        /* @__PURE__ */ jsx13("p", { className: label, children: "Funding" }),
+        /* @__PURE__ */ jsx13("p", { className: "font-bold", children: `${funding.amount} ${funding.currency} ${String.fromCharCode(
           215
-        )} ${numWinners}` })
+        )} ${funding.winners}` })
       ] }),
-      /* @__PURE__ */ jsxs7("div", { children: [
-        /* @__PURE__ */ jsx11("p", { className: label, children: "Prop deadline" }),
-        /* @__PURE__ */ jsx11("p", { className: "font-bold", children: relative(proposalEndTime) })
+      /* @__PURE__ */ jsxs10("div", { children: [
+        /* @__PURE__ */ jsx13("p", { className: label, children: "Prop deadline" }),
+        /* @__PURE__ */ jsx13("p", { className: "font-bold", children: relative(proposalDeadline) })
       ] }),
-      /* @__PURE__ */ jsxs7("div", { children: [
-        /* @__PURE__ */ jsx11("p", { className: label, children: "Proposals" }),
-        /* @__PURE__ */ jsx11("p", { className: "font-bold", children: proposalCount })
+      /* @__PURE__ */ jsxs10("div", { children: [
+        /* @__PURE__ */ jsx13("p", { className: label, children: "Proposals" }),
+        /* @__PURE__ */ jsx13("p", { className: "font-bold", children: proposals.length })
       ] })
     ] })
   ] });
 };
 
 // lib/components/PropHouseRounds.tsx
-import { jsx as jsx12 } from "react/jsx-runtime";
-var PropHouseRounds = ({ dao, opts = {} }) => {
+import { jsx as jsx14 } from "react/jsx-runtime";
+var PropHouseRounds = ({ opts = {} }) => {
   const theme = opts?.theme;
+  const houseId = opts?.houseId ? Number(opts?.houseId) : 21;
   const sortDirection = opts?.sortDirection?.toUpperCase() || "DESC";
   const rows = Number(opts?.rows) || 3;
   const itemsPerRow = Number(opts?.itemsPerRow) || 2;
-  const roundData = usePropHouseRounds(dao);
+  const [isDataLoaded, setIsDataLoaded] = useState13(false);
+  const { data: roundData } = useRoundsByHouse2({ houseId });
   const [rounds, setRounds] = useState13([]);
   useEffect15(() => {
-    if (roundData.length) {
-      if (sortDirection === "ASC") {
-        const sorted = [...roundData].sort((a, b) => a.id - b.id);
-        setRounds(sorted);
-      } else
-        setRounds(roundData);
+    if (sortDirection === "ASC") {
+      const sorted = [...roundData].sort((a, b) => a.created - b.created);
+      setRounds(sorted);
+    } else {
+      const sorted = [...roundData].sort((a, b) => b.created - a.created);
+      setRounds(sorted);
     }
   }, [roundData, sortDirection]);
-  return /* @__PURE__ */ jsx12(ComponentWrapper_default, { theme, children: /* @__PURE__ */ jsx12("div", { id: "ph-rounds", className: `mx-auto grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-5`, children: rounds.map((round, i) => {
-    const communitySlug = round.communityName.toLowerCase().replaceAll(" ", "-");
-    const roundSlug = round.title.toLowerCase().replaceAll(" ", "-");
+  return /* @__PURE__ */ jsx14(ComponentWrapper_default, { theme, isDataLoaded: roundData.length ? true : false, children: /* @__PURE__ */ jsx14("div", { id: "ph-rounds", className: `mx-auto grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-5`, children: rounds.map((round, i) => {
     if (rows && i >= rows * itemsPerRow)
       return null;
-    return /* @__PURE__ */ jsx12(
-      "a",
-      {
-        href: `https://prop.house/${communitySlug}/${roundSlug}`,
-        target: "_blank",
-        rel: "noreferrer",
-        children: /* @__PURE__ */ jsx12(PropHouseRound, { round })
-      },
-      i
-    );
+    return /* @__PURE__ */ jsx14("a", { href: round.url, target: "_blank", rel: "noreferrer", children: /* @__PURE__ */ jsx14(PropHouseRound, { round }) }, round.id);
   }) }) });
 };
 
@@ -6981,8 +6897,8 @@ var PropHouseRounds = ({ dao, opts = {} }) => {
 import { useEffect as useEffect16, useState as useState14 } from "react";
 
 // lib/components/ProposalListItem.tsx
-import cx6 from "classnames";
-import { Fragment as Fragment4, jsx as jsx13, jsxs as jsxs8 } from "react/jsx-runtime";
+import cx7 from "classnames";
+import { Fragment as Fragment5, jsx as jsx15, jsxs as jsxs11 } from "react/jsx-runtime";
 var statusColors2 = {
   pending: "bg-yellow-200 text-yellow-800",
   active: "bg-green-200 text-green-800",
@@ -6995,27 +6911,27 @@ var statusColors2 = {
 var ProposalListItem = ({ dao, proposal }) => {
   const { id, status, title, voteStart, voteEnd } = proposal;
   const { collection } = dao.contracts;
-  return /* @__PURE__ */ jsx13("a", { href: `https://nouns.build/dao/${collection}/vote/${id}`, children: /* @__PURE__ */ jsxs8(
+  return /* @__PURE__ */ jsx15("a", { href: `https://nouns.build/dao/${collection}/vote/${id}`, children: /* @__PURE__ */ jsxs11(
     "div",
     {
       className: `flex flex-col-reverse md:flex-row justify-between gap-3 border border-theme-border p-3 md:p-5 rounded-lg hover:shadow-md shadow-none transition-shadow`,
       children: [
-        /* @__PURE__ */ jsxs8("div", { className: "flex flex-col", children: [
-          /* @__PURE__ */ jsx13("p", { className: "text-xl font-bold leading-snug", children: title }),
-          /* @__PURE__ */ jsx13("p", { className: "text-sm opacity-40", children: relative(voteStart) })
+        /* @__PURE__ */ jsxs11("div", { className: "flex flex-col", children: [
+          /* @__PURE__ */ jsx15("p", { className: "text-xl font-bold leading-snug", children: title }),
+          /* @__PURE__ */ jsx15("p", { className: "text-sm opacity-40", children: relative(voteStart) })
         ] }),
-        /* @__PURE__ */ jsx13("div", { className: "flex flex-row md:flex-row-reverse items-center gap-3", children: status && /* @__PURE__ */ jsxs8(Fragment4, { children: [
-          /* @__PURE__ */ jsx13(
+        /* @__PURE__ */ jsx15("div", { className: "flex flex-row md:flex-row-reverse items-center gap-3", children: status && /* @__PURE__ */ jsxs11(Fragment5, { children: [
+          /* @__PURE__ */ jsx15(
             "p",
             {
-              className: cx6(
+              className: cx7(
                 statusColors2[status.toLowerCase() || "unknown"],
                 "rounded-lg px-3 py-2 text-center font-bold text-xs md:text-base"
               ),
               children: status
             }
           ),
-          status === "Active" && /* @__PURE__ */ jsxs8("p", { className: "text-sm opacity-40", children: [
+          status === "Active" && /* @__PURE__ */ jsxs11("p", { className: "text-sm opacity-40", children: [
             "ends ",
             relative(voteEnd)
           ] })
@@ -7026,15 +6942,17 @@ var ProposalListItem = ({ dao, proposal }) => {
 };
 
 // lib/components/ProposalList.tsx
-import { jsx as jsx14 } from "react/jsx-runtime";
+import { jsx as jsx16 } from "react/jsx-runtime";
 var ProposalList = ({ dao, opts = {} }) => {
   const theme = opts?.theme;
   const sortDirection = opts?.sortDirection?.toUpperCase() || "DESC";
   const maxProposals = Number(opts?.max) || 10;
+  const [isDataLoaded, setIsDataLoaded] = useState14(false);
   const props = useProposals(dao);
   const [proposals, setProposals] = useState14([]);
   useEffect16(() => {
     if (props.length) {
+      setIsDataLoaded(true);
       if (sortDirection === "ASC") {
         const sorted = [...props].sort((a, b) => a.created - b.created);
         setProposals(sorted);
@@ -7042,17 +6960,17 @@ var ProposalList = ({ dao, opts = {} }) => {
         setProposals(props);
     }
   }, [props, sortDirection]);
-  return /* @__PURE__ */ jsx14(ComponentWrapper_default, { theme, children: /* @__PURE__ */ jsx14("div", { id: "proposal-list", className: "flex flex-col gap-6", children: proposals?.map((proposal, i) => {
+  return /* @__PURE__ */ jsx16(ComponentWrapper_default, { theme, isDataLoaded, children: /* @__PURE__ */ jsx16("div", { id: "proposal-list", className: "flex flex-col gap-6", children: proposals?.map((proposal, i) => {
     if (maxProposals && i >= maxProposals)
       return null;
-    return /* @__PURE__ */ jsx14(ProposalListItem, { dao, proposal }, proposal.id);
+    return /* @__PURE__ */ jsx16(ProposalListItem, { dao, proposal }, proposal.id);
   }) }) });
 };
 
 // lib/components/Treasury.tsx
 import { useEffect as useEffect17, useRef as useRef3, useState as useState15 } from "react";
 import { useBalance } from "wagmi";
-import { jsx as jsx15, jsxs as jsxs9 } from "react/jsx-runtime";
+import { jsx as jsx17, jsxs as jsxs12 } from "react/jsx-runtime";
 var Treasury = ({ dao, opts = {} }) => {
   const ref = useRef3(null);
   const theme = opts?.theme;
@@ -7081,7 +6999,7 @@ var Treasury = ({ dao, opts = {} }) => {
       applyTheme(target, theme);
     }
   }, [theme, ref]);
-  return /* @__PURE__ */ jsx15(
+  return /* @__PURE__ */ jsx17(
     "a",
     {
       href: "https://etherscan.io/address/" + address,
@@ -7089,8 +7007,8 @@ var Treasury = ({ dao, opts = {} }) => {
       rel: "noreferrer",
       target: "_blank",
       ref,
-      children: /* @__PURE__ */ jsxs9("p", { className: "font-bold", children: [
-        /* @__PURE__ */ jsx15("span", { className: "opacity-60 inline-block mr-3", children: "Treasury" }),
+      children: /* @__PURE__ */ jsxs12("p", { className: "font-bold", children: [
+        /* @__PURE__ */ jsx17("span", { className: "opacity-60 inline-block mr-3", children: "Treasury" }),
         "\u039E ",
         balance
       ] })
@@ -7110,7 +7028,6 @@ export {
   useCollection,
   useDao,
   useMembers,
-  usePropHouseRounds,
   useProposals,
   useToken
 };

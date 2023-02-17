@@ -29,7 +29,7 @@ export const components = [
   {
     name: "Members List",
     image: "https://via.placeholder.com/150",
-    opts: ["rows", "itemsPerRow", "sortDirection"],
+    opts: ["rows", "itemsPerRow"],
     embedCodeName: "members-list",
   },
   {
@@ -42,12 +42,14 @@ export const components = [
     image: "https://via.placeholder.com/150",
     opts: ["rows", "itemsPerRow", "sortDirection"],
     embedCodeName: "prop-house-rounds",
+    isPH: true,
   },
   {
     name: "PropHouse Props",
     image: "https://via.placeholder.com/150",
     opts: ["maxProposals", "sortDirection"],
     embedCodeName: "prop-house-props",
+    isPH: true,
   },
 ];
 

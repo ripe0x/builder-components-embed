@@ -21,6 +21,7 @@ type Props = {
   collections: DaoDetails[];
   setSelectedDao: Function;
   selectedDao: string;
+  phCommunities: any;
 };
 const formatOptionLabel = ({
   value,
@@ -43,7 +44,6 @@ function ComponentPicker(props: Props) {
   const defaultDaoAddress = "0xdf9b7d26c8fc806b1ae6273684556761ff02d422";
   const [selectedTheme, setSelectedTheme] = useState<number>(0);
   const [selectedComponent, setSelectedComponent] = useState<number>(0);
-  // const [selectedDao, setSelectedDao] = useState<string>(defaultDaoAddress); // defaults to builder DAO
   const [embedCode, setEmbedCode] = useState<string>("[temp embed code]");
   const [rows, setRows] = useState<number>(3);
   const [itemsPerRow, setItemsPerRow] = useState<number>(5);
@@ -100,11 +100,24 @@ function ComponentPicker(props: Props) {
     label: "Builder DAO",
     logo: "https://ipfs.filebase.io/ipfs/bafybeieifu437zmpo74odis7pg34ch5svupd5reowpsbb35wih7327mnhy/unnamed.png",
   };
+
   const selectOptions = props.collections.map((collection) => {
     return {
       value: collection.collectionAddress,
       label: collection.name,
       logo: collection.logo || "/placeholder.png",
+    };
+  });
+
+  const options = [
+    { value: "chocolate", label: "Chocolate" },
+    { value: "strawberry", label: "Strawberry" },
+    { value: "vanilla", label: "Vanilla" },
+  ];
+  const selectComponentOptions = components.map((component, i) => {
+    return {
+      value: i,
+      label: component.name,
     };
   });
 
@@ -119,17 +132,31 @@ function ComponentPicker(props: Props) {
     sortDirection,
   ]);
 
-  console.log("dao", dao);
+  const [isActivePH, setIsActivePh] = useState(false);
 
+  // const isPH = props.phCommunities?.includes(props.selectedDao);
+  useEffect(() => {
+    if (
+      props.phCommunities.communities.some(
+        (e: any) =>
+          e.contractAddress.toUpperCase() === props.selectedDao.toUpperCase(),
+      )
+    ) {
+      /* vendors contains the element we're looking for */
+      setIsActivePh(true);
+    } else {
+      setIsActivePh(false);
+    }
+  }, [props.selectedDao]);
   return (
     <div className="w-full px-3 md:px-10">
       <div className="mx-auto w-full max-w-screen-2xl rounded-lg border border-slate-200 bg-white">
-        <div className="flex w-full md:flex-row">
-          <div className="flex w-1/5 flex-col bg-slate-100">
+        <div className="flex w-full flex-col md:flex-row">
+          <div className="flex flex-col bg-slate-100 md:w-1/5">
             <div className={cx("px-4 py-3", sidebarBorderClasses)}>
-              <p className="opacity-7 py-3 text-sm uppercase tracking-wide">
+              {/* <p className="opacity-7 py-3 text-sm uppercase tracking-wide">
                 Select DAO
-              </p>
+              </p> */}
               <Select
                 defaultValue={defaultSelectedDao}
                 formatOptionLabel={formatOptionLabel}
@@ -145,7 +172,7 @@ function ComponentPicker(props: Props) {
                 sidebarBorderClasses,
               )}
             >
-              <p className="opacity-7 py-3 text-sm uppercase tracking-wide">
+              <p className="opacity-7 pb-3 text-sm uppercase tracking-wide">
                 Theme
               </p>
               {themes.map((theme, i) => (
@@ -173,29 +200,49 @@ function ComponentPicker(props: Props) {
               >
                 Select a component
               </h2>
-              {components.map((component, i) => (
-                <button
-                  onClick={() => setSelectedComponent(i)}
-                  className={cx(
-                    "w-full border border-r-0 border-l-0 border-b-0 border-slate-200 bg-slate-100 px-4 py-3 text-left transition-all hover:bg-white",
-                    sidebarBorderClasses,
-                    selectedComponent === i &&
-                      "!border-r-transparent !bg-white",
-                  )}
-                >
-                  <span
+
+              <div className="block w-full px-4 pb-3 md:!hidden md:px-0 md:pb-0">
+                {/* mobile select */}
+                <Select
+                  options={selectComponentOptions}
+                  onChange={(e) => setSelectedComponent(e?.value || 0)}
+                />
+              </div>
+              <div className="hidden w-full md:block">
+                {components.map((component, i) => (
+                  <button
+                    onClick={() =>
+                      ((component.isPH && isActivePH) || !component.isPH) &&
+                      setSelectedComponent(i)
+                    }
+                    disabled={component.isPH && !isActivePH}
                     className={cx(
-                      "opacity-60",
-                      selectedComponent === i && "opacity-100",
+                      "w-full border border-r-0 border-l-0 border-b-0 border-slate-200 bg-slate-100 px-4 py-3 text-left transition-all hover:bg-white disabled:opacity-60",
+                      sidebarBorderClasses,
+                      selectedComponent === i &&
+                        "!border-r-transparent !bg-white",
                     )}
                   >
-                    {component.name}
-                  </span>
-                </button>
-              ))}
+                    <span
+                      className={cx(
+                        "opacity-60",
+                        selectedComponent === i && "opacity-100",
+                      )}
+                    >
+                      {component.name}
+                    </span>
+
+                    {component.isPH && !isActivePH && (
+                      <p className="text-xs italic leading-snug opacity-70">
+                        no prop house found
+                      </p>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="relative w-4/5">
+          <div className="relative md:w-4/5">
             <div className="sticky border-b border-b-slate-200 py-3 px-5">
               <AnimatePresence exitBeforeEnter>
                 <motion.div

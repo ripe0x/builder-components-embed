@@ -101,31 +101,6 @@ type ProposalVote = {
 	reason: string;
 };
 
-type PHRoundData = {
-	communityId: number;
-	communityName: string;
-	id: number;
-	status: string;
-	title: string;
-	startTime: number;
-	proposalEndTime: number;
-	votingEndTime: number;
-	numWinners: number;
-	fundingAmount: number;
-	currency: string;
-	description: string;
-	proposalCount: number;
-	proposals: PHProposal[];
-};
-
-type PHProposal = {
-	id: number;
-	created: number;
-	proposer: string;
-	title: string;
-	tldr: string;
-};
-
 declare const BuilderDAO: ({ collection, chain, children }: React.PropsWithChildren<DaoConfig>) => React.FunctionComponentElement<React.ProviderProps<DaoConfig>>;
 
 declare const useAuction: (dao: DaoInfo) => {
@@ -155,8 +130,6 @@ declare const useMembers: (dao: DaoInfo) => DaoMember[];
 
 declare const useProposals: (dao: DaoInfo) => ProposalData[];
 
-declare const usePropHouseRounds: (dao: DaoInfo) => PHRoundData[];
-
 declare const useToken: (id: number | undefined, dao: DaoInfo) => TokenData;
 
 declare const AuctionHero: ({ dao, opts }: ComponentConfig) => JSX.Element;
@@ -165,12 +138,12 @@ declare const CollectionList: ({ dao, opts }: ComponentConfig) => JSX.Element;
 
 declare const MemberList: ({ dao, opts }: ComponentConfig) => JSX.Element;
 
-declare const PropHouseProps: ({ dao, opts }: ComponentConfig) => JSX.Element;
+declare const PropHouseProps: ({ opts }: ComponentConfig) => JSX.Element;
 
-declare const PropHouseRounds: ({ dao, opts }: ComponentConfig) => JSX.Element;
+declare const PropHouseRounds: ({ opts }: ComponentConfig) => JSX.Element;
 
 declare const ProposalList: ({ dao, opts }: ComponentConfig) => JSX.Element;
 
 declare const Treasury: ({ dao, opts }: ComponentConfig) => JSX.Element;
 
-export { AuctionHero, BuilderDAO, CollectionList, MemberList, PropHouseProps, PropHouseRounds, ProposalList, Treasury, useAuction, useCollection, useDao, useMembers, usePropHouseRounds, useProposals, useToken };
+export { AuctionHero, BuilderDAO, CollectionList, MemberList, PropHouseProps, PropHouseRounds, ProposalList, Treasury, useAuction, useCollection, useDao, useMembers, useProposals, useToken };
