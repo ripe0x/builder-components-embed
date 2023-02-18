@@ -6261,7 +6261,17 @@ var loading_noggles_default = "./loading-noggles-BTZW44M2.gif";
 // lib/components/shared/Loading.tsx
 import { jsx } from "react/jsx-runtime";
 function Loading({}) {
-  return /* @__PURE__ */ jsx("div", { className: "mx-auto w-full h-full flex items-center justify-center p-4 md:p-10", children: /* @__PURE__ */ jsx("img", { src: loading_noggles_default, alt: "loading", className: "w-full max-w-[120px]" }) });
+  return /* @__PURE__ */ jsx("div", { className: "mx-auto w-full h-full flex items-center justify-center p-4 md:p-10", children: /* @__PURE__ */ jsx(
+    "img",
+    {
+      src: loading_noggles_default,
+      alt: "loading",
+      className: "w-full",
+      style: {
+        maxWidth: "120px"
+      }
+    }
+  ) });
 }
 var Loading_default = Loading;
 
@@ -6498,7 +6508,7 @@ var AuctionHero = ({ dao, opts = {} }) => {
     }
   };
   return /* @__PURE__ */ jsxs4(ComponentWrapper_default, { theme, isDataLoaded, children: [
-    isDataLoaded && !auctionData?.auctionId && /* @__PURE__ */ jsx7("div", { id: "auction", children: /* @__PURE__ */ jsx7("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx7("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx7("p", { className: "bg-slate-50 p-4 md:p-10 w-full", children: "No auction found" }) }) }) }),
+    isDataLoaded && !auctionData?.auctionId && /* @__PURE__ */ jsx7("div", { id: "auction", children: /* @__PURE__ */ jsx7("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx7("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx7("p", { className: "p-4 md:p-10 w-full", children: "No auction found" }) }) }) }),
     isDataLoaded && auctionData?.auctionId ? /* @__PURE__ */ jsx7("div", { id: "auction", children: /* @__PURE__ */ jsx7("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsxs4("div", { className: "w-full flex flex-col md:flex-row md:gap-10 items-center", children: [
       /* @__PURE__ */ jsx7("div", { className: "md:w-3/5 aspect-square", children: token?.imageUrl && /* @__PURE__ */ jsx7(TokenImage_default, { imageUrl: token.imageUrl }) }),
       /* @__PURE__ */ jsxs4("div", { className: "mt-10 mb-5 w-full sm:w-3/4 md:w-2/5", children: [
@@ -6788,9 +6798,9 @@ import { jsx as jsx12, jsxs as jsxs9 } from "react/jsx-runtime";
 var getListFormatClasses = (format) => {
   return format === "grid" ? "grid grid-cols-1 md:grid-cols-3" : "flex flex-col";
 };
-var PropHouseProps = ({ opts = {} }) => {
+var PropHouseProps = ({ dao, opts = {} }) => {
   const theme = opts?.theme;
-  const houseId = opts?.houseId ? Number(opts?.houseId) : 21;
+  const houseId = opts?.houseId && Number(opts?.houseId);
   const roundName = opts?.round ?? "";
   const format = opts?.format || "list";
   const maxProposals = Number(opts?.max) || 12;
@@ -6810,7 +6820,7 @@ var PropHouseProps = ({ opts = {} }) => {
       setRound(void 0);
   }, [roundName, roundData]);
   return /* @__PURE__ */ jsxs9(ComponentWrapper_default, { theme, isDataLoaded: roundData.length ? true : false, children: [
-    !round && /* @__PURE__ */ jsx12("div", { id: "auction", children: /* @__PURE__ */ jsx12("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx12("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx12("p", { className: "bg-slate-50 p-4 md:p-10 w-full", children: "No auction found" }) }) }) }),
+    !round && /* @__PURE__ */ jsx12("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx12("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx12("p", { className: "bg-slate-50 p-4 md:p-10 w-full", children: "No Prop House props found" }) }) }),
     /* @__PURE__ */ jsx12("div", { id: "ph-rounds", className: cx5(`mx-auto gap-5 `, getListFormatClasses(format)), children: round && round.proposals.map((prop, i) => {
       if (i >= maxProposals)
         return null;
@@ -6867,13 +6877,15 @@ var PropHouseRound = ({ round }) => {
 };
 
 // lib/components/PropHouseRounds.tsx
-import { jsx as jsx14 } from "react/jsx-runtime";
+import { useMediaQuery as useMediaQuery3 } from "react-responsive";
+import { jsx as jsx14, jsxs as jsxs11 } from "react/jsx-runtime";
 var PropHouseRounds = ({ opts = {} }) => {
   const theme = opts?.theme;
-  const houseId = opts?.houseId ? Number(opts?.houseId) : 21;
+  const houseId = opts?.houseId && Number(opts?.houseId);
   const sortDirection = opts?.sortDirection?.toUpperCase() || "DESC";
   const rows = Number(opts?.rows) || 3;
   const itemsPerRow = Number(opts?.itemsPerRow) || 2;
+  const isMdOrAbove = useMediaQuery3({ query: "(min-width: 786px)" });
   const [isDataLoaded, setIsDataLoaded] = useState13(false);
   const { data: roundData } = useRoundsByHouse2({ houseId });
   const [rounds, setRounds] = useState13([]);
@@ -6886,11 +6898,24 @@ var PropHouseRounds = ({ opts = {} }) => {
       setRounds(sorted);
     }
   }, [roundData, sortDirection]);
-  return /* @__PURE__ */ jsx14(ComponentWrapper_default, { theme, isDataLoaded: roundData.length ? true : false, children: /* @__PURE__ */ jsx14("div", { id: "ph-rounds", className: `mx-auto grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-5`, children: rounds.map((round, i) => {
-    if (rows && i >= rows * itemsPerRow)
-      return null;
-    return /* @__PURE__ */ jsx14("a", { href: round.url, target: "_blank", rel: "noreferrer", children: /* @__PURE__ */ jsx14(PropHouseRound, { round }) }, round.id);
-  }) }) });
+  return /* @__PURE__ */ jsxs11(ComponentWrapper_default, { theme, isDataLoaded: roundData.length ? true : false, children: [
+    !rounds && /* @__PURE__ */ jsx14("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx14("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx14("p", { className: "bg-slate-50 p-4 md:p-10 w-full", children: "No Prop House rounds found" }) }) }),
+    /* @__PURE__ */ jsx14(
+      "div",
+      {
+        id: "ph-rounds",
+        className: `mx-auto grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-5`,
+        style: {
+          gridTemplateColumns: isMdOrAbove ? `repeat(${itemsPerRow},minmax(0,1fr))` : "repeat(1,minmax(0,1fr))"
+        },
+        children: rounds.map((round, i) => {
+          if (rows && i >= rows * itemsPerRow)
+            return null;
+          return /* @__PURE__ */ jsx14("a", { href: round.url, target: "_blank", rel: "noreferrer", children: /* @__PURE__ */ jsx14(PropHouseRound, { round }) }, round.id);
+        })
+      }
+    )
+  ] });
 };
 
 // lib/components/ProposalList.tsx
@@ -6898,7 +6923,7 @@ import { useEffect as useEffect16, useState as useState14 } from "react";
 
 // lib/components/ProposalListItem.tsx
 import cx7 from "classnames";
-import { Fragment as Fragment5, jsx as jsx15, jsxs as jsxs11 } from "react/jsx-runtime";
+import { Fragment as Fragment5, jsx as jsx15, jsxs as jsxs12 } from "react/jsx-runtime";
 var statusColors2 = {
   pending: "bg-yellow-200 text-yellow-800",
   active: "bg-green-200 text-green-800",
@@ -6911,16 +6936,16 @@ var statusColors2 = {
 var ProposalListItem = ({ dao, proposal }) => {
   const { id, status, title, voteStart, voteEnd } = proposal;
   const { collection } = dao.contracts;
-  return /* @__PURE__ */ jsx15("a", { href: `https://nouns.build/dao/${collection}/vote/${id}`, children: /* @__PURE__ */ jsxs11(
+  return /* @__PURE__ */ jsx15("a", { href: `https://nouns.build/dao/${collection}/vote/${id}`, children: /* @__PURE__ */ jsxs12(
     "div",
     {
       className: `flex flex-col-reverse md:flex-row justify-between gap-3 border border-theme-border p-3 md:p-5 rounded-lg hover:shadow-md shadow-none transition-shadow`,
       children: [
-        /* @__PURE__ */ jsxs11("div", { className: "flex flex-col", children: [
+        /* @__PURE__ */ jsxs12("div", { className: "flex flex-col", children: [
           /* @__PURE__ */ jsx15("p", { className: "text-xl font-bold leading-snug", children: title }),
           /* @__PURE__ */ jsx15("p", { className: "text-sm opacity-40", children: relative(voteStart) })
         ] }),
-        /* @__PURE__ */ jsx15("div", { className: "flex flex-row md:flex-row-reverse items-center gap-3", children: status && /* @__PURE__ */ jsxs11(Fragment5, { children: [
+        /* @__PURE__ */ jsx15("div", { className: "flex flex-row md:flex-row-reverse items-center gap-3", children: status && /* @__PURE__ */ jsxs12(Fragment5, { children: [
           /* @__PURE__ */ jsx15(
             "p",
             {
@@ -6931,7 +6956,7 @@ var ProposalListItem = ({ dao, proposal }) => {
               children: status
             }
           ),
-          status === "Active" && /* @__PURE__ */ jsxs11("p", { className: "text-sm opacity-40", children: [
+          status === "Active" && /* @__PURE__ */ jsxs12("p", { className: "text-sm opacity-40", children: [
             "ends ",
             relative(voteEnd)
           ] })
@@ -6970,7 +6995,7 @@ var ProposalList = ({ dao, opts = {} }) => {
 // lib/components/Treasury.tsx
 import { useEffect as useEffect17, useRef as useRef3, useState as useState15 } from "react";
 import { useBalance } from "wagmi";
-import { jsx as jsx17, jsxs as jsxs12 } from "react/jsx-runtime";
+import { jsx as jsx17, jsxs as jsxs13 } from "react/jsx-runtime";
 var Treasury = ({ dao, opts = {} }) => {
   const ref = useRef3(null);
   const theme = opts?.theme;
@@ -7007,7 +7032,7 @@ var Treasury = ({ dao, opts = {} }) => {
       rel: "noreferrer",
       target: "_blank",
       ref,
-      children: /* @__PURE__ */ jsxs12("p", { className: "font-bold", children: [
+      children: /* @__PURE__ */ jsxs13("p", { className: "font-bold", children: [
         /* @__PURE__ */ jsx17("span", { className: "opacity-60 inline-block mr-3", children: "Treasury" }),
         "\u039E ",
         balance

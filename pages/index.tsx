@@ -44,7 +44,6 @@ export default function Embed({ collections, phCommunities }: Props) {
   const defaultDaoAddress = "0xdf9b7d26c8fc806b1ae6273684556761ff02d422";
   const [selectedDao, setSelectedDao] = useState<string>(defaultDaoAddress); // defaults to builder DAO
   const [view, setView] = useState<number>(0);
-  console.log("collections", collections);
   return (
     <BuilderDAO collection={selectedDao} chain="MAINNET">
       <Helmet>
@@ -56,7 +55,7 @@ export default function Embed({ collections, phCommunities }: Props) {
       <Layout>
         <div className="mx-auto mb-3 px-4 text-center md:max-w-2xl">
           <h1 className="px-3 pt-10 pb-3 text-4xl font-bold">
-            Nounish DAO Components
+            Builder Components
           </h1>
           <p className="text-sm font-normal opacity-70">
             A set of lightly styled, reusable pieces of UI for both developers

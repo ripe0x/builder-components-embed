@@ -28,7 +28,6 @@ export async function getCollectionOwners(tokenContractAddress: string) {
     .then((response) => response.json())
     .then((response) => response)
     .catch((err) => console.error(err));
-    console.log('owners', owners)
   return owners;
 }
 

@@ -25,6 +25,7 @@ export const GET_DAO_PH_ROUNDS = gql`
 export const GET_ALL_PH_COMMUNITIES = gql`
   query GetAllCommunities {
     communities {
+      id
       name
       contractAddress
     }

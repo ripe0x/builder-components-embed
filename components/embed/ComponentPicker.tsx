@@ -13,6 +13,7 @@ import {
   nounsDaoContracts,
   themes,
 } from "../../data/constants";
+import { useRoundsByHouse, type Round } from "use-prop-house";
 import cx from "classnames";
 import DaoLogo from "../shared/DaoLogo";
 import { useBlockNumber } from "wagmi";
@@ -53,7 +54,16 @@ function ComponentPicker(props: Props) {
   const [view, setView] = useState<number>(0);
   const [copied, setCopied] = useState<boolean>(false);
   const [daoData, setDaoData] = useState<any>();
+  const [propHouseId, setPropHouseId] = useState<number>(0);
   const dao = useDao();
+  const { data: phRoundData } = useRoundsByHouse({ houseId: propHouseId });
+  const [rounds, setRounds] = useState<{ value: string; label: string }[]>([
+    {
+      value: "",
+      label: "",
+    },
+  ]);
+  const [selectedPhRoundName, setSelectedPhRoundName] = useState<string>();
 
   const updateEmbedCode = () => {
     setCopied(false);
@@ -95,6 +105,7 @@ function ComponentPicker(props: Props) {
       setCopied(false);
     }, 3500);
   };
+
   const defaultSelectedDao = {
     value: "0xdf9b7d26c8fc806b1ae6273684556761ff02d422",
     label: "Builder DAO",
@@ -109,11 +120,6 @@ function ComponentPicker(props: Props) {
     };
   });
 
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
   const selectComponentOptions = components.map((component, i) => {
     return {
       value: i,
@@ -133,30 +139,41 @@ function ComponentPicker(props: Props) {
   ]);
 
   const [isActivePH, setIsActivePh] = useState(false);
-
-  // const isPH = props.phCommunities?.includes(props.selectedDao);
   useEffect(() => {
-    if (
-      props.phCommunities.communities.some(
-        (e: any) =>
-          e.contractAddress.toUpperCase() === props.selectedDao.toUpperCase(),
-      )
-    ) {
-      /* vendors contains the element we're looking for */
+    const phIndex = props.phCommunities.communities.findIndex(
+      (item: any) =>
+        item.contractAddress.toUpperCase() === props.selectedDao.toUpperCase(),
+    );
+
+    if (phIndex > -1) {
+      const houseId = props.phCommunities.communities[phIndex].id;
+      const rounds = phRoundData?.map((round: any) => {
+        return {
+          value: round.name,
+          label: round.name,
+        };
+      });
+
       setIsActivePh(true);
+      setPropHouseId(houseId);
+      setRounds(rounds);
     } else {
       setIsActivePh(false);
     }
-  }, [props.selectedDao]);
+  }, [props.selectedDao, phRoundData]);
+
+  useEffect(() => {
+    components[selectedComponent].name === "Prop House Rounds"
+      ? setItemsPerRow(2)
+      : setItemsPerRow(5);
+  }, [selectedComponent]);
+
   return (
     <div className="w-full px-3 md:px-10">
       <div className="mx-auto w-full max-w-screen-2xl rounded-lg border border-slate-200 bg-white">
-        <div className="flex w-full flex-col md:flex-row">
+        <div className="relative z-10 flex w-full flex-col md:flex-row">
           <div className="flex flex-col bg-slate-100 md:w-1/5">
             <div className={cx("px-4 py-3", sidebarBorderClasses)}>
-              {/* <p className="opacity-7 py-3 text-sm uppercase tracking-wide">
-                Select DAO
-              </p> */}
               <Select
                 defaultValue={defaultSelectedDao}
                 formatOptionLabel={formatOptionLabel}
@@ -177,6 +194,7 @@ function ComponentPicker(props: Props) {
               </p>
               {themes.map((theme, i) => (
                 <button
+                  key={i}
                   className={cx(
                     "capitalize",
                     buttonClasses,
@@ -260,7 +278,18 @@ function ComponentPicker(props: Props) {
                   <div className="flex flex-row gap-3">
                     {components[selectedComponent].opts?.includes(
                       "roundName",
-                    ) && <input type="text" placeholder="Round name" />}
+                    ) && (
+                      <Select
+                        options={rounds}
+                        // defaultValue={rounds[0]}
+                        onChange={(e) => setSelectedPhRoundName(e?.value)}
+                        menuPortalTarget={document.body}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        }}
+                      />
+                    )}
+
                     {components[selectedComponent].opts?.includes(
                       "sortDirection",
                     ) && (
@@ -362,6 +391,7 @@ function ComponentPicker(props: Props) {
                         </label>
                       </div>
                     )}
+
                     {components[selectedComponent].opts?.includes(
                       "itemsPerRow",
                     ) && (
@@ -431,7 +461,7 @@ function ComponentPicker(props: Props) {
                 </motion.div>
               </AnimatePresence>
             </div>
-            <div className="w-full">
+            <div className="relative z-0 w-full">
               <AnimatePresence exitBeforeEnter>
                 <motion.div
                   key={`${selectedComponent + props.selectedDao}`}
@@ -453,7 +483,9 @@ function ComponentPicker(props: Props) {
                       collectionAddress={props.selectedDao}
                       maxProposals={maxProposals}
                       hideLabels={hideLabels}
+                      roundName={selectedPhRoundName}
                       dao={dao}
+                      propHouseId={propHouseId}
                     />
                   )}
                 </motion.div>

@@ -409,9 +409,6 @@ body {
 .max-w-\[300px\] {
   max-width: 300px;
 }
-.max-w-\[120px\] {
-  max-width: 120px;
-}
 .flex-shrink-0 {
   flex-shrink: 0;
 }
@@ -532,10 +529,6 @@ body {
 .border-theme-border {
   border-color: var(--theme-border);
 }
-.bg-slate-50 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(248 250 252 / var(--tw-bg-opacity));
-}
 .bg-gray-400 {
   --tw-bg-opacity: 1;
   background-color: rgb(156 163 175 / var(--tw-bg-opacity));
@@ -546,6 +539,10 @@ body {
 }
 .bg-background {
   background-color: var(--theme-background);
+}
+.bg-slate-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 250 252 / var(--tw-bg-opacity));
 }
 .bg-yellow-200 {
   --tw-bg-opacity: 1;

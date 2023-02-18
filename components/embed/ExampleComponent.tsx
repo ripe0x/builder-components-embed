@@ -22,7 +22,9 @@ type Props = {
   sortDirection?: SortDirection;
   maxProposals?: number;
   hideLabels?: boolean;
+  roundName?: string;
   dao: DaoInfo;
+  propHouseId?: number;
 };
 
 function ExampleComponent(props: Props) {
@@ -86,8 +88,9 @@ function ExampleComponent(props: Props) {
           opts={{
             theme: theme,
             rows: props.rows ? props.rows.toString() : "3",
-            itemsPerRow: props.itemsPerRow ? props.itemsPerRow.toString() : "5",
+            itemsPerRow: props.itemsPerRow ? props.itemsPerRow.toString() : "2",
             sortDirection: props.sortDirection ? props.sortDirection : "DESC",
+            houseId: props.propHouseId ? props.propHouseId : "",
           }}
         />
       )}
@@ -98,17 +101,8 @@ function ExampleComponent(props: Props) {
             theme: theme,
             max: props.maxProposals ? props.maxProposals.toString() : "5",
             sortDirection: props.sortDirection ? props.sortDirection : "DESC",
-          }}
-        />
-      )}
-      {props.componentIndex === 7 && (
-        <CollectionList
-          dao={props.dao}
-          opts={{
-            theme: theme,
-            rows: props.rows ? props.rows.toString() : "3",
-            itemsPerRow: props.itemsPerRow ? props.itemsPerRow.toString() : "5",
-            sortDirection: props.sortDirection ? props.sortDirection : "DESC",
+            round: props.roundName ? props.roundName : "",
+            houseId: props.propHouseId ? props.propHouseId : "",
           }}
         />
       )}

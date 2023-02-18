@@ -33,14 +33,15 @@ export const components = [
     embedCodeName: "treasury",
   },
   {
-    name: "PropHouse Rounds",
+    name: "Prop House Rounds",
     opts: ["rows", "itemsPerRow", "sortDirection"],
+    defaultValues: ["3", "2", "DESC"],
     embedCodeName: "prop-house-rounds",
     isPH: true,
   },
   {
-    name: "PropHouse Props",
-    opts: ["maxProposals", "sortDirection"],
+    name: "Prop House Props",
+    opts: ["maxProposals", "roundName"],
     embedCodeName: "prop-house-props",
     isPH: true,
   },
