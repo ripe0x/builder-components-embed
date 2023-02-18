@@ -63,7 +63,7 @@ function ComponentPicker(props: Props) {
       label: "",
     },
   ]);
-  const [selectedPhRoundName, setSelectedPhRoundName] = useState<string>();
+  const [selectedPhRoundName, setSelectedPhRoundName] = useState<string>("");
 
   const updateEmbedCode = () => {
     setCopied(false);
@@ -287,8 +287,8 @@ function ComponentPicker(props: Props) {
                     ) && (
                       <Select
                         options={rounds}
-                        defaultValue={rounds.length > 0 && rounds[0]}
-                        onChange={(e) => setSelectedPhRoundName(e?.value)}
+                        defaultValue={rounds[0]}
+                        onChange={(e) => setSelectedPhRoundName(e?.value || "")}
                         menuPortalTarget={document.body}
                         styles={{
                           menuPortal: (base) => ({ ...base, zIndex: 9999 }),
