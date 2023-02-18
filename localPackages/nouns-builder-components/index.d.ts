@@ -138,7 +138,7 @@ declare const CollectionList: ({ dao, opts }: ComponentConfig) => JSX.Element;
 
 declare const MemberList: ({ dao, opts }: ComponentConfig) => JSX.Element;
 
-declare const PropHouseProps: ({ dao, opts }: ComponentConfig) => JSX.Element;
+declare const PropHouseProps: ({ opts }: ComponentConfig) => JSX.Element;
 
 declare const PropHouseRounds: ({ opts }: ComponentConfig) => JSX.Element;
 

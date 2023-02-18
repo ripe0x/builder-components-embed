@@ -6758,7 +6758,7 @@ import cx4 from "classnames";
 
 // lib/styles/shared.ts
 var label = "text-sm text-slate-400";
-var pill = "rounded-md px-2 py-1 text-center text-sm";
+var pill = "rounded-md px-2 py-1 text-center text-sm h-fit";
 var statusColors = [
   "bg-red-200 text-red-800",
   "bg-green-200 text-green-800",
@@ -6798,7 +6798,7 @@ import { jsx as jsx12, jsxs as jsxs9 } from "react/jsx-runtime";
 var getListFormatClasses = (format) => {
   return format === "grid" ? "grid grid-cols-1 md:grid-cols-3" : "flex flex-col";
 };
-var PropHouseProps = ({ dao, opts = {} }) => {
+var PropHouseProps = ({ opts = {} }) => {
   const theme = opts?.theme;
   const houseId = opts?.houseId && Number(opts?.houseId);
   const roundName = opts?.round ?? "";
@@ -6820,7 +6820,7 @@ var PropHouseProps = ({ dao, opts = {} }) => {
       setRound(void 0);
   }, [roundName, roundData]);
   return /* @__PURE__ */ jsxs9(ComponentWrapper_default, { theme, isDataLoaded: roundData.length ? true : false, children: [
-    !round && /* @__PURE__ */ jsx12("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx12("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx12("p", { className: "bg-slate-50 p-4 md:p-10 w-full", children: "No Prop House props found" }) }) }),
+    !round && /* @__PURE__ */ jsx12("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx12("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx12("p", { className: "p-4 md:p-10 w-full", children: "No Prop House props found" }) }) }),
     /* @__PURE__ */ jsx12("div", { id: "ph-rounds", className: cx5(`mx-auto gap-5 `, getListFormatClasses(format)), children: round && round.proposals.map((prop, i) => {
       if (i >= maxProposals)
         return null;
@@ -6899,7 +6899,7 @@ var PropHouseRounds = ({ opts = {} }) => {
     }
   }, [roundData, sortDirection]);
   return /* @__PURE__ */ jsxs11(ComponentWrapper_default, { theme, isDataLoaded: roundData.length ? true : false, children: [
-    !rounds && /* @__PURE__ */ jsx14("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx14("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx14("p", { className: "bg-slate-50 p-4 md:p-10 w-full", children: "No Prop House rounds found" }) }) }),
+    !rounds && /* @__PURE__ */ jsx14("div", { className: "flex justify-center mx-auto", children: /* @__PURE__ */ jsx14("div", { className: "h-full text-center w-full flex flex-col md:flex-row md:gap-10 items-center", children: /* @__PURE__ */ jsx14("p", { className: "p-4 md:p-10 w-full", children: "No Prop House rounds found" }) }) }),
     /* @__PURE__ */ jsx14(
       "div",
       {

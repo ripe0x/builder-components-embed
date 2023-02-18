@@ -94,9 +94,14 @@ function ComponentPicker(props: Props) {
             ? `data-hide-labels="${hideLabels}"`
             : ""
         }
+        ${
+          components[selectedComponent].opts?.includes("roundName")
+            ? `data-round-name="${selectedPhRoundName}"`
+            : ""
+        }
         
         />`;
-    setEmbedCode(embed);
+    setEmbedCode(embed.replace(/\s+/g, " ").trim());
   };
 
   const handleCopy = () => {
@@ -157,6 +162,7 @@ function ComponentPicker(props: Props) {
       setIsActivePh(true);
       setPropHouseId(houseId);
       setRounds(rounds);
+      rounds.length > 0 && setSelectedPhRoundName(rounds[0].value);
     } else {
       setIsActivePh(false);
     }
@@ -169,7 +175,7 @@ function ComponentPicker(props: Props) {
   }, [selectedComponent]);
 
   return (
-    <div className="w-full px-3 md:px-10">
+    <div className="h-fit w-full px-3 md:px-10">
       <div className="mx-auto w-full max-w-screen-2xl rounded-lg border border-slate-200 bg-white">
         <div className="relative z-10 flex w-full flex-col md:flex-row">
           <div className="flex flex-col bg-slate-100 md:w-1/5">
@@ -281,7 +287,7 @@ function ComponentPicker(props: Props) {
                     ) && (
                       <Select
                         options={rounds}
-                        defaultValue={rounds[0]}
+                        defaultValue={rounds.length > 0 && rounds[0]}
                         onChange={(e) => setSelectedPhRoundName(e?.value)}
                         menuPortalTarget={document.body}
                         styles={{

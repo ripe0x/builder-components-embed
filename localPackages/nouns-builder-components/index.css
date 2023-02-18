@@ -393,6 +393,10 @@ body {
 .h-full {
   height: 100%;
 }
+.h-fit {
+  height: -moz-fit-content;
+  height: fit-content;
+}
 .h-6 {
   height: 1.5rem;
 }
@@ -539,10 +543,6 @@ body {
 }
 .bg-background {
   background-color: var(--theme-background);
-}
-.bg-slate-50 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(248 250 252 / var(--tw-bg-opacity));
 }
 .bg-yellow-200 {
   --tw-bg-opacity: 1;
