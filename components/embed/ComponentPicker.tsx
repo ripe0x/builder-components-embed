@@ -281,7 +281,7 @@ function ComponentPicker(props: Props) {
                     ) && (
                       <Select
                         options={rounds}
-                        // defaultValue={rounds[0]}
+                        defaultValue={rounds[0]}
                         onChange={(e) => setSelectedPhRoundName(e?.value)}
                         menuPortalTarget={document.body}
                         styles={{
