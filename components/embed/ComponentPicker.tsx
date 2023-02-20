@@ -235,6 +235,7 @@ function ComponentPicker(props: Props) {
               <div className="hidden w-full md:block">
                 {components.map((component, i) => (
                   <button
+                    key={i}
                     onClick={() =>
                       ((component.isPH && isActivePH) || !component.isPH) &&
                       setSelectedComponent(i)
