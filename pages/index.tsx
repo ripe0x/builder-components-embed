@@ -76,7 +76,7 @@ export default function Embed({ collections, phCommunities }: Props) {
           >
             Components
           </button>
-          <button
+          {/* <button
             className={cx(
               "rounded-full",
               buttonClasses,
@@ -87,7 +87,21 @@ export default function Embed({ collections, phCommunities }: Props) {
             onClick={() => setView(1)}
           >
             Info
-          </button>
+          </button> */}
+          <a
+            href="https://ripe0x.notion.site/Builder-Components-info-595707954ee74d58afb4014ee904baf5"
+            target="_blank"
+            rel="noreferrer"
+            className={cx(
+              "rounded-full",
+              buttonClasses,
+              view === 1 && {
+                "bg-white-100 !border-slate-600": true,
+              },
+            )}
+          >
+            Info
+          </a>
         </div>
         {view === 1 ? (
           <Info />
