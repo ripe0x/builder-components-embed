@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-const DOMAIN = "https://precedent.dev";
+const DOMAIN = "https://buildercomponents.wtf";
 
 export default function Meta({
   title = "Builder Components",
