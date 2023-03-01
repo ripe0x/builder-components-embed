@@ -4,8 +4,8 @@ const DOMAIN = "https://precedent.dev";
 
 export default function Meta({
   title = "Builder Components",
-  description = "",
-  image = `${DOMAIN}/image/og.png`,
+  description = "A set of lightly styled, reusable pieces of UI for both developers and non-technical users to create websites for their Nouns Protocol DAO using the tools they already know.",
+  image = `${DOMAIN}/og-image.png`,
 }: {
   title?: string;
   description?: string;
